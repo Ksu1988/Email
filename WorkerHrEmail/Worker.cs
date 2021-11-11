@@ -62,7 +62,7 @@ namespace WorkerHrEmail
 
                     _logger.LogInformation("!!!!!!: " + _config.GetSection("Test").Value);
 
-                    //Work_NewEmployees();
+                    Work_NewEmployees();
                     Work_OneYearEmployees();
 
                     _logger.LogDebug($"DoWork {_counter} finished, will start iteration {_counter + 1}");

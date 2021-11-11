@@ -68,7 +68,7 @@ namespace WorkerHrEmail.Model
 	            group by [main].[EmployeeID], [Core].[dbo].[User].[Mail],[Core].[dbo].[User].[FirstNameRU]
             ) as main
             where firstdate >= GETDATE() - 370
-                and firstdate <= GETDATE() - 360                
+                and firstdate <= GETDATE() - 360
             order by 2 desc";
 
         /// <summary>
