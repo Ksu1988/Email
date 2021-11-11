@@ -13,25 +13,6 @@ namespace WorkerHrEmail.Model
     public enum ReasonsForSelect { wellcome, oneYear }
     public static class DbHelper
     {
-        /// <summary>
-        /// Выбирает работников у которых одна запись в таблице Movement, у которых нет даты увольнения, 
-        /// которые устроились не раньше недели назад
-        /// </summary>
-        //private static string sqlForWellcomeEmail = @"
-        //      SELECT [main].[EmployeeID]
-        //          ,[DateStart]
-        //       ,counts.cnt
-        //       ,[Core].[dbo].[User].[Mail]
-        //       ,[Core].[dbo].[User].[FirstNameRU]
-        //      FROM [Core].[dbo].[MovementHistory] main   
-        //       inner join [Core].[dbo].[User] on ([Core].[dbo].[User].[EmployeeID] = [main].[EmployeeID]),
-        //       (select EmployeeID, count(*) cnt from [Core].[dbo].[MovementHistory] group by EmployeeID ) as counts
-        //      where DateFinish is null
-        //      and counts.EmployeeID = main.EmployeeID
-        //      and counts.cnt = 1
-        //      and DateStart >= GetDate() - 7
-        //      order by 2 desc";
-
         private static string sqlForWellcomeEmail = @"
             select * from
             (
@@ -91,10 +72,10 @@ namespace WorkerHrEmail.Model
                     FirstDate = SqlDateTime.Parse(row["FirstDate"].ToString()).Value
                 };
 
-                //if (DateTime.TryParseExact(row["FirstDate"].ToString(), "yyyy-MM-dd HH:mm:ss", null, DateTimeStyles.None, out dt))
-                //{
-                //    u.FirstDate = dt.Value;
-                //}
+                var patt = "dd/MM/yyyy hh:mm:ss tt";
+                DateTime dt;
+                if( DateTime.TryParseExact(row["FirstDate"].ToString(), patt, null, DateTimeStyles.None, out dt) )
+                    u.FirstDate = dt;
                 res.Add(u);
             }
 
