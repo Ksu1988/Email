@@ -134,7 +134,7 @@ namespace WorkerHrEmail
                             //to: user.Mail,
                             to: "aleksandr.anufriev@stada.ru",
                             subject: "Ура, ты уже год в STADA!",
-                            filename: "data\\oneyear.teml"                            
+                            filename: "data\\oneyear.teml"
                         ))
                         {
                             //отсылаем письмо
