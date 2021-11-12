@@ -60,14 +60,12 @@ namespace WorkerHrEmail
                 {
                     _logger.LogDebug($"Running DoWork iteration {_counter}");
 
-                    _logger.LogInformation("!!!!!!: " + _config.GetSection("Test").Value);
-
                     Work_NewEmployees();
                     Work_OneYearEmployees();
 
                     _logger.LogDebug($"DoWork {_counter} finished, will start iteration {_counter + 1}");
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     _logger.LogCritical(e.Message);
                 }
@@ -93,9 +91,7 @@ namespace WorkerHrEmail
                         _logger.LogInformation($"sending email for {user.EmployeeId} ({user.Mail})");
                         //формируем письмо
                         using (var message = new EmailMessage(
-                            from: _config.GetSection("Email:From").Value,
-                            //to: user.Mail,
-                            to: "aleksandr.anufriev@stada.ru",
+                            to: user.Mail,
                             subject: "Добро пожаловать в STADA!",
                             filename: "data\\wellcome.teml",
                             Tuple.Create("Name", user.FirstNameRU) //добавляем имя
@@ -121,7 +117,7 @@ namespace WorkerHrEmail
                 foreach (var user in users)
                 {
                     if (!conn.WasOneYearEmail(user) //этому работнику еще не отсылали
-                                                     //дополнительные проверки, что именно год назад
+                                                    //дополнительные проверки, что именно год назад
                         && user.FirstDate.Value.Year == DateTime.Now.Year - 1
                         && user.FirstDate.Value.Month == DateTime.Now.Month
                         && user.FirstDate.Value.Day == DateTime.Now.Day
@@ -130,9 +126,7 @@ namespace WorkerHrEmail
                         _logger.LogInformation($"sending email for {user.EmployeeId} ({user.Mail})");
                         //формируем письмо
                         using (var message = new EmailMessage(
-                            from: _config.GetSection("Email:From").Value,
-                            //to: user.Mail,
-                            to: "aleksandr.anufriev@stada.ru",
+                            to: user.Mail,
                             subject: "Ура, ты уже год в STADA!",
                             filename: "data\\oneyear.teml"
                         ))

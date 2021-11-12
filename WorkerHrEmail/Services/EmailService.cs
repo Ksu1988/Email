@@ -9,29 +9,26 @@ namespace WorkerHrEmail.Services
     public class EmailService
     {
         public static void SendMessage(
-            //string username,
-            //string password,
-            //string server,
             MailMessage message)
         {
-            ////var mailAuthentication = new NetworkCredential(username, password);
-            //using (var mailClient = new SmtpClient(server))
-            //{
-            //    //mailClient.EnableSsl = true;
-            //    //mailClient.UseDefaultCredentials = false;
-            //    //mailClient.Credentials = mailAuthentication;
-            //    mailClient.Send(message);
-            //}
+            //TODO !!! для тестирования !!!
+            message.To.Add(new MailAddress("aleksandr.anufriev@stada.ru"));
 
-            var mail = new MailMessage();
-            mail.To.Clear();
-            mail.To.Add(new MailAddress("Aleksandr.Anufriev@stada.ru"));
-            mail.Subject = "test";
-            mail.From = new MailAddress("noreply@stada.ru");
-            mail.IsBodyHtml = true;
-            mail.Body = "testtesttest";
+            //var mailAuthentication = new NetworkCredential(username, password);
+            using (var mailClient = new SmtpClient("mail.stada.ru"))
+            {
+                mailClient.Send(message);
+            }
 
-            var smtp = new SmtpClient("mail.stada.ru");
+            //var mail = new MailMessage();
+            //mail.To.Clear();
+            //mail.To.Add(new MailAddress("Aleksandr.Anufriev@stada.ru"));
+            //mail.Subject = "test";
+            //mail.From = new MailAddress("noreply@stada.ru");
+            //mail.IsBodyHtml = true;
+            //mail.Body = "testtesttest";
+
+            //var smtp = new SmtpClient("mail.stada.ru", 25);
             //smtp.Send(mail);
         }
     }

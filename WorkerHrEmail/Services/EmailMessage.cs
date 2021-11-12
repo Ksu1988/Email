@@ -13,7 +13,8 @@ namespace WorkerHrEmail.Services
         public Dictionary<string, string> _data = new Dictionary<string, string>();
         public Dictionary<string, string> Data => _data;
 
-        public EmailMessage(string from, string to, string subject, string filename, params Tuple<string, string>[] data) : base(from, to, subject, "")
+        public EmailMessage(string to, string subject, string filename, params Tuple<string, string>[] data) 
+            : base("noreply@stada.ru", to, subject, "")
         {
             IsBodyHtml = true;
             BodyEncoding = Encoding.GetEncoding("UTF-8");
@@ -75,20 +76,15 @@ namespace WorkerHrEmail.Services
         }
         AlternateView _av = null;
 
-        protected StringBuilder html
-        {
-            get
-            {
-                return new StringBuilder();
-            }
-        }
-
         #region парсинг шаблона
         private void InitBodyFromTemplate(string template)
         {
             var lines = template.Split('\n');
             var sb = new StringBuilder();
             var row = 0;
+
+            //В начале нужно проинициализироват тело, а потом уже добавлять ресурсы. Поэтому вначале накапливает действия в actions, а 
+            //после формирования тела - запускаем все
             var actions = new List<Action>();
             foreach (var l in lines)
             {
@@ -107,7 +103,7 @@ namespace WorkerHrEmail.Services
                 sb.AppendLine(l); //просто html, сохраняем для тела
             }
 
-            //В начале нужно проинициализироват тело, а потом уже добавлять ресурсы. Поэтому - так
+            //вставляем в тело переменные {бла-бла}
             Body = sb.ToString();
             foreach (var k in Data.Keys)
                 Body = Body.Replace($"{{{k}}}", Data[k]);

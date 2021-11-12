@@ -102,7 +102,6 @@ namespace WorkerHrEmail.Model
 
         public static string ToMSSQLDate(this DateTime dt)
         {
-            //2021-11-11 16:02:45.680
             return dt.ToString("yyyy-MM-dd HH:mm:ss");
         }
 
