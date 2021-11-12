@@ -11,7 +11,8 @@ namespace WorkerHrEmail.Services
         public static void SendMessage(
             MailMessage message)
         {
-            //TODO !!! для тестирования !!!
+            //TODO !!! две следующих строки - для тестирования !!!
+            message.To.Clear();
             message.To.Add(new MailAddress("aleksandr.anufriev@stada.ru"));
 
             //var mailAuthentication = new NetworkCredential(username, password);
