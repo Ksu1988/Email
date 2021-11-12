@@ -22,6 +22,7 @@ namespace WorkerHrEmail
                 .UseWindowsService()
                 .ConfigureLogging(logging =>
                 {
+                    logging.AddConsole();
                     //logging.SetMinimumLevel(LogLevel.Debug);
 
                     //IConfiguration config = new ConfigurationBuilder()

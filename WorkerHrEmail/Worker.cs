@@ -62,6 +62,7 @@ namespace WorkerHrEmail
 
                     Work_NewEmployees();
                     Work_OneYearEmployees();
+                    Work_Report();
 
                     _logger.LogDebug($"DoWork {_counter} finished, will start iteration {_counter + 1}");
                 }
@@ -79,6 +80,7 @@ namespace WorkerHrEmail
 
         private void Work_NewEmployees()
         {
+            _logger.LogInformation("wellcome emails start");
             string cs = _config.GetSection("ConnectionStrings:CbaConnectionString").Value;
             using (var conn = new MSSqlConnection(cs))
             {
@@ -105,10 +107,12 @@ namespace WorkerHrEmail
                     }
                 }
             }
+            _logger.LogInformation("wellcome emails comleted");
         }
 
         private void Work_OneYearEmployees()
         {
+            _logger.LogInformation("one year email start");
             string cs = _config.GetSection("ConnectionStrings:CbaConnectionString").Value;
             using (var conn = new MSSqlConnection(cs))
             {
@@ -139,6 +143,21 @@ namespace WorkerHrEmail
                     }
                 }
             }
+            _logger.LogInformation("one year email comleted");
+        }
+
+
+        /// <summary>
+        /// раз в месяц отсылаем письма
+        /// </summary>
+        private void Work_Report()
+        {
+            _logger.LogInformation("report start");
+
+
+
+
+            _logger.LogInformation("report comleted");
         }
     }
 }
