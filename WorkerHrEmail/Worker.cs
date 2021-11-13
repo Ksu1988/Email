@@ -148,14 +148,30 @@ namespace WorkerHrEmail
 
 
         /// <summary>
-        /// раз в месяц отсылаем письма
+        /// раз в месяц отсылаем письмо с отчетом
         /// </summary>
         private void Work_Report()
         {
             _logger.LogInformation("report start");
 
+            string cs = _config.GetSection("ConnectionStrings:CbaConnectionString").Value;
+            using (var conn = new MSSqlConnection(cs))
+            {
+                var history = conn.GetHistory();//Получаем историю отправки писем, которые еще не оформляли в отчет
 
-
+                if (history.Max(x => x.Diff1) >= 30 || history.Max(x => x.Diff2) >= 30) //Накопилось больше 30 дней. Оформляем отчет
+                {
+                    _logger.LogInformation("send report");
+                    using (var message = new EmailReport(_config.GetSection("Email:ForReport").Value, history.ToArray()))
+                    {
+                        //отсылаем письмо
+                        EmailService.SendMessage(message);
+                        //отмечаем у всех пользователей, что мы отчитались по отправке писем
+                        foreach (var user in history)
+                            conn.UserReported(user.EmployeeId); //записываем в базу данных, что по пользователю отчитались
+                    }
+                }
+            }
 
             _logger.LogInformation("report comleted");
         }

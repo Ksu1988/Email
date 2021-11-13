@@ -76,6 +76,11 @@ namespace WorkerHrEmail.Services
         }
         AlternateView _av = null;
 
+        protected StringBuilder html
+        {
+            get { return new StringBuilder(); }
+        }
+
         #region парсинг шаблона
         private void InitBodyFromTemplate(string template)
         {

@@ -52,6 +52,19 @@ namespace WorkerHrEmail.Model
                 and firstdate <= GETDATE() - 360
             order by 2 desc";
 
+        private static string sqlForReport = @"
+            SELECT hist.*, 
+	            DATEDIFF(day, WellcomeEmail, GETDATE()) diff1,
+	            DATEDIFF(day, OneYearEmail, GETDATE()) diff2,
+	            [Core].[dbo].[User].LastNameRU,
+	            [Core].[dbo].[User].FirstNameRU,
+	            [Core].[dbo].[User].MiddleNameRU,
+	            [Core].[dbo].[User].Mail
+              FROM [HR].[dbo].[UserReceivedEmail] hist
+              inner join [Core].[dbo].[User] on ([Core].[dbo].[User].[EmployeeID] = [hist].[EmployeeID])
+              where 
+              hist.Report is null";
+
         /// <summary>
         /// Select employees for wellcome letter
         /// </summary>
@@ -69,17 +82,62 @@ namespace WorkerHrEmail.Model
                     EmployeeId = row["EmployeeID"].ToInt32(),
                     FirstNameRU = row["FirstNameRU"].ToString(),
                     Mail = row["Mail"].ToString(),
-                    FirstDate = SqlDateTime.Parse(row["FirstDate"].ToString()).Value
+                    FirstDate = MSSQL2DT(row["FirstDate"])
                 };
 
-                var patt = "dd/MM/yyyy hh:mm:ss tt";
-                DateTime dt;
-                if( DateTime.TryParseExact(row["FirstDate"].ToString(), patt, null, DateTimeStyles.None, out dt) )
-                    u.FirstDate = dt;
+                //var patt = "dd/MM/yyyy hh:mm:ss tt";
+                //DateTime dt;
+                //if( DateTime.TryParseExact(row["FirstDate"].ToString(), patt, null, DateTimeStyles.None, out dt) )
+                //    u.FirstDate = dt;
                 res.Add(u);
             }
 
             return res;
+        }
+
+        public static List<History> GetHistory(this MSSqlConnection db)
+        {
+            var rawItems = db.GetItems(sqlForReport);
+
+            var res = new List<History>();
+            foreach (var row in rawItems)
+            {
+                var u = new History()
+                {
+                    EmployeeId = row["EmployeeID"].ToInt32(),
+
+                    Diff1 = row["Diff1"].ToInt32(),
+                    Diff2 = row["Diff2"].ToInt32(),
+
+                    LastNameRu = row["LastNameRU"].ToString(),
+                    FirstNameRu = row["FirstNameRU"].ToString(),
+                    MiddleNameRu = row["MiddleNameRU"].ToString(),
+                    Mail = row["Mail"].ToString(),
+
+                    WellcomeEmail = MSSQL2DT(row["WellcomeEmail"]),
+                    OneYearEmail = MSSQL2DT(row["OneYearEmail"]),
+                    Report = MSSQL2DT(row["Report"]),
+                };
+
+                res.Add(u);
+            }
+
+            return res;
+        }
+
+        private static DateTime? MSSQL2DT(object obj)
+        {
+            if (obj == null) 
+                return null;
+
+            DateTime dt;
+            if (DateTime.TryParseExact(obj.ToString(), "MM/dd/yyyy hh:mm:ss tt", null, DateTimeStyles.None, out dt))
+                return dt;
+            if (DateTime.TryParseExact(obj.ToString(), "MM/dd/yyyy h:mm:ss tt", null, DateTimeStyles.None, out dt))
+                return dt;
+
+
+            return null;
         }
 
         /// <summary>
@@ -136,6 +194,11 @@ namespace WorkerHrEmail.Model
             {
                 db.Query($@"UPDATE [HR].[dbo].[UserReceivedEmail] SET OneYearEmail = '{DateTime.Now.ToMSSQLDate()}' WHERE EmployeeID={user.EmployeeId}");
             }
+        }
+
+        public static void UserReported(this MSSqlConnection db, int userId)
+        {
+            db.Query($@"UPDATE [HR].[dbo].[UserReceivedEmail] SET Report = '{DateTime.Now.ToMSSQLDate()}' WHERE EmployeeID={userId}");
         }
     }
 }

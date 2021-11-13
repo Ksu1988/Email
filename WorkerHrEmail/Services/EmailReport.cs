@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Mail;
 using System.Text;
+using WorkerHrEmail.Model;
 
 namespace WorkerHrEmail.Services
 {
@@ -9,7 +11,8 @@ namespace WorkerHrEmail.Services
     /// </summary>
     public class EmailReport: EmailMessage
     {
-        public EmailReport(string to, string subject, string filename)
+        public List<object> Items { set; get; }
+        public EmailReport(string to, params History[] data)
             : base("noreply@stada.ru", to, "Отчет о письмах сотрудникам")
         {
 
@@ -17,12 +20,16 @@ namespace WorkerHrEmail.Services
 
         protected override void InitBody()
         {
-            Body = html
-                .Text("<H3>Отчет ")
+            var sb = new StringBuilder();
+            sb.AppendLine("<h3>Отчет</h3><br/>");
+            sb.Append("<table><tr><td>№ п/п</td><td>Дата</td><td>ФИО</td><td>Письмо</td></tr>");
 
+            foreach(var r in Items)
+            {
 
+            }
 
-                .ToString();
+            sb.AppendLine("</table>");
         }
     }
 }

@@ -18,9 +18,12 @@ namespace WorkerHrEmail.Services
             //var mailAuthentication = new NetworkCredential(username, password);
             using (var mailClient = new SmtpClient("mail.stada.ru"))
             {
+
+                //TODO вот эта штука должна работать только на проде
                 //mailClient.Send(message);
             }
 
+            //тестовый пример
             //var mail = new MailMessage();
             //mail.To.Clear();
             //mail.To.Add(new MailAddress("Aleksandr.Anufriev@stada.ru"));
