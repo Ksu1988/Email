@@ -9,7 +9,8 @@ namespace WorkerHrEmail.Model
         public int EmployeeId { set; get; }
         public DateTime? WellcomeEmail { set; get; }
         public DateTime? OneYearEmail { set; get; }
-        public DateTime? Report { set; get; }
+        public DateTime? ReportWellcome { set; get; }
+        public DateTime? ReportOneYear { set; get; }
         public int Diff1 { set; get; }
         public int Diff2 { set; get; }
         public string LastNameRu { set; get; }

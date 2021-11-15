@@ -32,7 +32,6 @@ namespace WorkerHrEmail.Model
                 and Mail is not null
             order by 2 desc";
 
-
         private static string sqlForOneYearEmail = @"
             select * from
             (
@@ -63,7 +62,9 @@ namespace WorkerHrEmail.Model
               FROM [HR].[dbo].[UserReceivedEmail] hist
               inner join [Core].[dbo].[User] on ([Core].[dbo].[User].[EmployeeID] = [hist].[EmployeeID])
               where 
-              hist.Report is null";
+                 hist.ReportWellcome is null
+			  or hist.ReportOneYear is null
+              order by WellcomeEmail, OneYearEmail";
 
         /// <summary>
         /// Select employees for wellcome letter
@@ -116,7 +117,8 @@ namespace WorkerHrEmail.Model
 
                     WellcomeEmail = MSSQL2DT(row["WellcomeEmail"]),
                     OneYearEmail = MSSQL2DT(row["OneYearEmail"]),
-                    Report = MSSQL2DT(row["Report"]),
+                    ReportWellcome = MSSQL2DT(row["ReportWellcome"]),
+                    ReportOneYear = MSSQL2DT(row["ReportOneYear"]),
                 };
 
                 res.Add(u);
@@ -182,13 +184,19 @@ namespace WorkerHrEmail.Model
             }
         }
 
+        public static void ReportedWellcomeEmail(this MSSqlConnection db, int employeeId)
+        {
+            db.Query($@"UPDATE [HR].[dbo].[UserReceivedEmail] SET ReportWellcome = '{DateTime.Now.ToMSSQLDate()}' WHERE EmployeeID={employeeId}");
+        }
+
+
         public static void UserReceivedOneYearEmail(this MSSqlConnection db, User user)
         {
             var data = db.GetItem($"SELECT * FROM [HR].[dbo].[UserReceivedEmail] WHERE EmployeeId = {user.EmployeeId}");
             if (data == null)
             {
                 db.Query(@"INSERT INTO [HR].[dbo].[UserReceivedEmail] (EmployeeId, WellcomeEmail, OneYearEmail) " +
-                    $@"VALUES ({user.EmployeeId}, '{DateTime.Now.ToMSSQLDate()}', '{DateTime.Now.ToMSSQLDate()}')"); //ставим заодно и wellcome ибо проработал год, всяко должен был получить
+                    $@"VALUES ({user.EmployeeId}, null, '{DateTime.Now.ToMSSQLDate()}')"); //ставим заодно и wellcome ибо проработал год, всяко должен был получить
             }
             else
             {
@@ -196,9 +204,9 @@ namespace WorkerHrEmail.Model
             }
         }
 
-        public static void UserReported(this MSSqlConnection db, int userId)
+        public static void ReportedOneYearEmail(this MSSqlConnection db, int employeeId)
         {
-            db.Query($@"UPDATE [HR].[dbo].[UserReceivedEmail] SET Report = '{DateTime.Now.ToMSSQLDate()}' WHERE EmployeeID={userId}");
+            db.Query($@"UPDATE [HR].[dbo].[UserReceivedEmail] SET ReportOneYear = '{DateTime.Now.ToMSSQLDate()}' WHERE EmployeeID={employeeId}");
         }
     }
 }
