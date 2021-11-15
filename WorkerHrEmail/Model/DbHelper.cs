@@ -62,8 +62,8 @@ namespace WorkerHrEmail.Model
               FROM [HR].[dbo].[UserReceivedEmail] hist
               inner join [Core].[dbo].[User] on ([Core].[dbo].[User].[EmployeeID] = [hist].[EmployeeID])
               where 
-                 hist.ReportWellcome is null
-			  or hist.ReportOneYear is null
+                 (hist.ReportWellcome is null and hist.WellcomeEmail is not null)
+			  or (hist.ReportOneYear is null and hist.OneYearEmail is not null)
               order by WellcomeEmail, OneYearEmail";
 
         /// <summary>
@@ -150,14 +150,17 @@ namespace WorkerHrEmail.Model
         /// <returns></returns>
         public static bool WasWellcomeEmail(this MSSqlConnection db, User user)
         {
-            var userReceived = db.GetItem($"SELECT * FROM [HR].[dbo].[UserReceivedEmail] WHERE EmployeeId = {user.EmployeeId} and WelcomeEmail is not null");
-            return userReceived != null;
+            var userReceived = db.GetItem($"SELECT * FROM [HR].[dbo].[UserReceivedEmail] WHERE EmployeeId = {user.EmployeeId}");
+            if (userReceived == null ) return false;
+
+            return MSSQL2DT(userReceived["WellcomeEmail"]) != null;
         }
 
         public static bool WasOneYearEmail(this MSSqlConnection db, User user)
         {
-            var userReceived = db.GetItem($"SELECT * FROM [HR].[dbo].[UserReceivedEmail] WHERE EmployeeId = {user.EmployeeId} and OneYearEmail is not null");
-            return userReceived != null;
+            var userReceived = db.GetItem($"SELECT * FROM [HR].[dbo].[UserReceivedEmail] WHERE EmployeeId = {user.EmployeeId}");
+            if (userReceived == null) return false;
+            return MSSQL2DT(userReceived["OneYearEmail"]) != null;
         }
 
         public static string ToMSSQLDate(this DateTime dt)
