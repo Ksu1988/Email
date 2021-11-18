@@ -1,0 +1,18 @@
+image: mcr.microsoft.com/dotnet/core/sdk:3.1
+
+before_script:
+  - $PSVersionTable.PSVersion
+  - dotnet --version
+  - nuget help | select-string Version
+
+stages:
+    - build
+
+build job:
+  stage: build
+  script:
+    - dotnet build -c Release
+  tags:
+    - cba-q
+  only:
+    - master

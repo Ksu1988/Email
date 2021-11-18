@@ -1,0 +1,3 @@
+dotnet publish -o "\\ms-cbr-001-q\c$\_WORKERS\WorkerHrEmail"
+
+sc create "CBA Worker HR Email" binPath=C:\_WORKERS\WorkerHrEmail\WorkerHrEmail.exe
