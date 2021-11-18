@@ -1,0 +1,23 @@
+@cid top = data/topOneYear.png
+@cid bottomLogo = data/bottom.png
+@cid smile = data/smile.jpg
+
+<body style='width: 945px; font-family: Arial, Helvetica, Geneva, sans-serif; font-size:14pt;'>
+    <table style='width: 945px;' >
+        <tr><td>
+            <p align='center'><img src="cid:top" /></p>
+        </td></tr>
+        <tr><td>
+            <h1><p align='center'>Поздравляем! Tы уже год в STADA!<img src="cid:smile" /></p></h1>
+        </td></tr>
+        <tr><td>
+            <p align='center'>Спасибо, что ты с нами все это время и за твой вклад в развитие Компании. Уверены, что этот год был полон интересных задач и амбициозных целей.</p>
+        </td></tr>
+        <tr><td>
+            <p align='center'>Желаем дальнейшего профессионально развития и карьерных успехов!</p>
+        </td></tr>
+        <tr><td>
+            <img src="cid:bottomLogo" align='center'/>
+        </td></tr>
+    </table>
+</body>

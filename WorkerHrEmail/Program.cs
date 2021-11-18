@@ -22,20 +22,20 @@ namespace WorkerHrEmail
                 .UseWindowsService()
                 .ConfigureLogging(logging =>
                 {
-                    logging.AddConsole();
-                    //logging.SetMinimumLevel(LogLevel.Debug);
+                    //logging.AddConsole();
+                    logging.SetMinimumLevel(LogLevel.Debug);
 
-                    //IConfiguration config = new ConfigurationBuilder()
-                    //    .AddJsonFile("appsettings.json")
-                    //    .Build();
-                    //string name = config.GetSection("Name").Value;
+                    IConfiguration config = new ConfigurationBuilder()
+                        .AddJsonFile("appsettings.json")
+                        .Build();
+                    string name = config.GetSection("Name").Value;
 
-                    //logging.ClearProviders();
-                    //logging.AddEventLog(new EventLogSettings
-                    //{
-                    //    SourceName = name,
-                    //    Filter = (source, level) => level >= LogLevel.Debug
-                    //});
+                    logging.ClearProviders();
+                    logging.AddEventLog(new EventLogSettings
+                    {
+                        SourceName = name,
+                        Filter = (source, level) => level >= LogLevel.Debug
+                    });
                 })
                 .ConfigureServices((hostContext, services) =>
                 {

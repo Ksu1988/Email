@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\dev\\Local\\Workers\\WorkerHrEmail\\WorkerHrEmail\\WorkerHrEmail.csproj": {}
+    "T:\\GIT-CBA\\Local\\Workers\\WorkerHrEmail\\WorkerHrEmail\\WorkerHrEmail.csproj": {}
   },
   "projects": {
-    "C:\\dev\\Common\\SCCBA\\SCCBA\\SCCBA.csproj": {
+    "T:\\GIT-CBA\\Common\\SCCBA\\SCCBA\\SCCBA.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\dev\\Common\\SCCBA\\SCCBA\\SCCBA.csproj",
+        "projectUniqueName": "T:\\GIT-CBA\\Common\\SCCBA\\SCCBA\\SCCBA.csproj",
         "projectName": "SCCBA",
-        "projectPath": "C:\\dev\\Common\\SCCBA\\SCCBA\\SCCBA.csproj",
-        "packagesPath": "C:\\Users\\SC11224\\.nuget\\packages\\",
-        "outputPath": "C:\\dev\\Common\\SCCBA\\SCCBA\\obj\\",
+        "projectPath": "T:\\GIT-CBA\\Common\\SCCBA\\SCCBA\\SCCBA.csproj",
+        "packagesPath": "C:\\Users\\sc5277\\.nuget\\packages\\",
+        "outputPath": "T:\\GIT-CBA\\Common\\SCCBA\\SCCBA\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\SC11224\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\sc5277\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -84,20 +84,20 @@
         }
       }
     },
-    "C:\\dev\\Local\\Workers\\WorkerHrEmail\\WorkerHrEmail\\WorkerHrEmail.csproj": {
+    "T:\\GIT-CBA\\Local\\Workers\\WorkerHrEmail\\WorkerHrEmail\\WorkerHrEmail.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\dev\\Local\\Workers\\WorkerHrEmail\\WorkerHrEmail\\WorkerHrEmail.csproj",
+        "projectUniqueName": "T:\\GIT-CBA\\Local\\Workers\\WorkerHrEmail\\WorkerHrEmail\\WorkerHrEmail.csproj",
         "projectName": "WorkerHrEmail",
-        "projectPath": "C:\\dev\\Local\\Workers\\WorkerHrEmail\\WorkerHrEmail\\WorkerHrEmail.csproj",
-        "packagesPath": "C:\\Users\\SC11224\\.nuget\\packages\\",
-        "outputPath": "C:\\dev\\Local\\Workers\\WorkerHrEmail\\WorkerHrEmail\\obj\\",
+        "projectPath": "T:\\GIT-CBA\\Local\\Workers\\WorkerHrEmail\\WorkerHrEmail\\WorkerHrEmail.csproj",
+        "packagesPath": "C:\\Users\\sc5277\\.nuget\\packages\\",
+        "outputPath": "T:\\GIT-CBA\\Local\\Workers\\WorkerHrEmail\\WorkerHrEmail\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\SC11224\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\sc5277\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -112,8 +112,8 @@
           "netcoreapp3.1": {
             "targetAlias": "netcoreapp3.1",
             "projectReferences": {
-              "C:\\dev\\Common\\SCCBA\\SCCBA\\SCCBA.csproj": {
-                "projectPath": "C:\\dev\\Common\\SCCBA\\SCCBA\\SCCBA.csproj"
+              "T:\\GIT-CBA\\Common\\SCCBA\\SCCBA\\SCCBA.csproj": {
+                "projectPath": "T:\\GIT-CBA\\Common\\SCCBA\\SCCBA\\SCCBA.csproj"
               }
             }
           }
@@ -155,6 +155,12 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.NETCore.App.Host.win-x64",
+              "version": "[3.1.20, 3.1.20]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"

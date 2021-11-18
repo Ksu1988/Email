@@ -131,6 +131,9 @@ namespace WorkerHrEmail.Model
         {
             if (obj == null) 
                 return null;
+            //if (obj == DBNull.Value)
+            //    return null;
+            //return Convert.ToDateTime(obj);
 
             DateTime dt;
             if (DateTime.TryParseExact(obj.ToString(), "MM/dd/yyyy hh:mm:ss tt", null, DateTimeStyles.None, out dt))

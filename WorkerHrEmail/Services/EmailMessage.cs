@@ -10,6 +10,7 @@ namespace WorkerHrEmail.Services
 {
     public class EmailMessage: MailMessage
     {
+        private string currentDirectory = System.AppDomain.CurrentDomain.BaseDirectory;
         public Dictionary<string, string> _data = new Dictionary<string, string>();
         public Dictionary<string, string> Data => _data;
 
@@ -120,9 +121,9 @@ namespace WorkerHrEmail.Services
         {
             //@attachment Адресная_книга_инструкция.pdf
             var dir = Directory.GetCurrentDirectory();
-            if (!File.Exists(filename.Trim()))
-                throw new Exception($"File {filename} not found");
-            AddAttachment(filename.Trim());
+            if (!File.Exists(currentDirectory + "\\" + filename.Trim()))
+                throw new Exception($"File {currentDirectory + "\\" + filename} not found");
+            AddAttachment(currentDirectory + "\\" + filename.Trim());
         }
 
         private void ParseResource(string line)
@@ -133,10 +134,10 @@ namespace WorkerHrEmail.Services
             var cid = pp[0].Trim();
             var filename = pp[1].Trim();
 
-            if (!File.Exists(filename))
-                throw new Exception($"File {filename} not found");
+            if (!File.Exists(currentDirectory + "\\" + filename))
+                throw new Exception($"File {currentDirectory + "\\" + filename} not found");
 
-            AddImageToResources(filename, cid);
+            AddImageToResources(currentDirectory + "\\" + filename, cid);
         }
 
         #endregion

@@ -26,6 +26,8 @@ namespace WorkerHrEmail
 
         private Timer _timer;
 
+        private string currentDirectory = System.AppDomain.CurrentDomain.BaseDirectory;
+
         public Worker(ILogger<Worker> logger, IConfiguration configuration)
         {
             _logger = logger;
@@ -68,7 +70,7 @@ namespace WorkerHrEmail
                 }
                 catch (Exception e)
                 {
-                    _logger.LogCritical(e.Message);
+                    _logger.LogCritical($"{e.Message}\r\n{e.StackTrace}");
                 }
                 finally
                 {
@@ -80,32 +82,34 @@ namespace WorkerHrEmail
 
         private void Work_NewEmployees()
         {
-            _logger.LogInformation("wellcome emails start");
+                _logger.LogInformation("wellcome emails start");
             string cs = _config.GetSection("ConnectionStrings:CbaConnectionString").Value;
             using (var conn = new MSSqlConnection(cs))
             {
                 var users = conn.GetUsers(ReasonsForSelect.wellcome);//Получаем пользователей, которые подходят под получение wellcome письма
 
-                foreach(var user in users)
-                {
-                    if( !conn.WasWellcomeEmail(user) ) //этому работнику еще не отсылали
+                
+                    foreach (var user in users)
                     {
-                        _logger.LogInformation($"sending email for {user.EmployeeId} ({user.Mail})");
-                        //формируем письмо
-                        using (var message = new EmailMessage(
-                            to: user.Mail,
-                            subject: "Добро пожаловать в STADA!",
-                            filename: $"{Directory.GetCurrentDirectory()}\\data\\wellcome.teml",
-                            Tuple.Create("Name", user.FirstNameRU) //добавляем имя
-                        ))
+                        if (!conn.WasWellcomeEmail(user)) //этому работнику еще не отсылали
                         {
-                            //отсылаем письмо
-                            EmailService.SendMessage(message);
-                            conn.UserReceivedWellcomeEmail(user); //записываем в базу данных, что пользователю письмо отправленно
+                            _logger.LogInformation($"sending email for {user.EmployeeId} ({user.Mail})");
+                            //формируем письмо
+                            using (var message = new EmailMessage(
+                                to: user.Mail,
+                                subject: "Добро пожаловать в STADA!",
+                                filename: $"{currentDirectory}\\data\\wellcome.teml",
+                                Tuple.Create("Name", user.FirstNameRU) //добавляем имя
+                            ))
+                            {
+                                //отсылаем письмо
+                                EmailService.SendMessage(message);
+                                conn.UserReceivedWellcomeEmail(user); //записываем в базу данных, что пользователю письмо отправленно
+                            }
+                            _logger.LogInformation($"email for {user.EmployeeId} ({user.Mail}) was sent");
                         }
-                        _logger.LogInformation($"email for {user.EmployeeId} ({user.Mail}) was sent");
                     }
-                }
+                
             }
             _logger.LogInformation("wellcome emails comleted");
         }
@@ -132,7 +136,7 @@ namespace WorkerHrEmail
                         using (var message = new EmailMessage(
                             to: user.Mail,
                             subject: "Ура, ты уже год в STADA!",
-                            filename:$"{Directory.GetCurrentDirectory()}\\data\\oneyear.teml"
+                            filename:$"{currentDirectory}\\data\\oneyear.teml"
                         ))
                         {
                             //отсылаем письмо
