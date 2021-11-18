@@ -95,7 +95,7 @@ namespace WorkerHrEmail
                         using (var message = new EmailMessage(
                             to: user.Mail,
                             subject: "Добро пожаловать в STADA!",
-                            filename: "data\\wellcome.teml",
+                            filename: $"{Directory.GetCurrentDirectory()}\\data\\wellcome.teml",
                             Tuple.Create("Name", user.FirstNameRU) //добавляем имя
                         ))
                         {
@@ -132,7 +132,7 @@ namespace WorkerHrEmail
                         using (var message = new EmailMessage(
                             to: user.Mail,
                             subject: "Ура, ты уже год в STADA!",
-                            filename: "data\\oneyear.teml"
+                            filename:$"{Directory.GetCurrentDirectory()}\\data\\oneyear.teml"
                         ))
                         {
                             //отсылаем письмо
