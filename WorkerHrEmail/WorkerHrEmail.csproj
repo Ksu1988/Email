@@ -41,6 +41,9 @@
     <None Update="data\topOneYear.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="data\ul.JPG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="data\vk.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

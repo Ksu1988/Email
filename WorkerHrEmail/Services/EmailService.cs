@@ -15,24 +15,10 @@ namespace WorkerHrEmail.Services
             message.To.Clear();
             message.To.Add(new MailAddress("aleksandr.anufriev@stada.ru"));
 
-            //var mailAuthentication = new NetworkCredential(username, password);
             using (var mailClient = new SmtpClient("mail.stada.ru"))
             {
-                //TODO вот эта штука должна работать только на проде
-                //mailClient.Send(message);
+                mailClient.Send(message);
             }
-
-            //тестовый пример
-            //var mail = new MailMessage();
-            //mail.To.Clear();
-            //mail.To.Add(new MailAddress("Aleksandr.Anufriev@stada.ru"));
-            //mail.Subject = "test";
-            //mail.From = new MailAddress("noreply@stada.ru");
-            //mail.IsBodyHtml = true;
-            //mail.Body = "testtesttest";
-
-            //var smtp = new SmtpClient("mail.stada.ru", 25);
-            //smtp.Send(mail);
         }
     }
 }

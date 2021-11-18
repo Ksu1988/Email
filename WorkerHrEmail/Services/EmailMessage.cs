@@ -121,9 +121,9 @@ namespace WorkerHrEmail.Services
         {
             //@attachment Адресная_книга_инструкция.pdf
             var dir = Directory.GetCurrentDirectory();
-            if (!File.Exists(currentDirectory + "\\" + filename.Trim()))
-                throw new Exception($"File {currentDirectory + "\\" + filename} not found");
-            AddAttachment(currentDirectory + "\\" + filename.Trim());
+            if (!File.Exists(currentDirectory + filename.Trim()))
+                throw new Exception($"File {currentDirectory + filename} not found");
+            AddAttachment(currentDirectory + filename.Trim());
         }
 
         private void ParseResource(string line)
@@ -134,10 +134,10 @@ namespace WorkerHrEmail.Services
             var cid = pp[0].Trim();
             var filename = pp[1].Trim();
 
-            if (!File.Exists(currentDirectory + "\\" + filename))
-                throw new Exception($"File {currentDirectory + "\\" + filename} not found");
+            if (!File.Exists(currentDirectory + filename))
+                throw new Exception($"File {currentDirectory + filename} not found");
 
-            AddImageToResources(currentDirectory + "\\" + filename, cid);
+            AddImageToResources(currentDirectory + filename, cid);
         }
 
         #endregion

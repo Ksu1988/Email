@@ -87,7 +87,6 @@ namespace WorkerHrEmail
             using (var conn = new MSSqlConnection(cs))
             {
                 var users = conn.GetUsers(ReasonsForSelect.wellcome);//Получаем пользователей, которые подходят под получение wellcome письма
-
                 
                     foreach (var user in users)
                     {

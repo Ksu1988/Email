@@ -2,6 +2,9 @@
 using SCCBA.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
+using System.Data.SqlClient;
 using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.Globalization;
@@ -73,7 +76,8 @@ namespace WorkerHrEmail.Model
         /// <returns></returns>
         public static IEnumerable<User> GetUsers(this MSSqlConnection db, ReasonsForSelect reason)
         {
-            var rawItems = db.GetItems(reason == ReasonsForSelect.wellcome?  sqlForWellcomeEmail: sqlForOneYearEmail);
+            var rawItems = db.GetItems(reason == ReasonsForSelect.wellcome?  sqlForWellcomeEmail: sqlForOneYearEmail, 
+                new DbParameter[] { });
 
             var res = new List<User>();
             foreach(var row in rawItems)
@@ -98,7 +102,7 @@ namespace WorkerHrEmail.Model
 
         public static List<History> GetHistory(this MSSqlConnection db)
         {
-            var rawItems = db.GetItems(sqlForReport);
+            var rawItems = db.GetItems(sqlForReport, new DbParameter[] { });
 
             var res = new List<History>();
             foreach (var row in rawItems)
@@ -131,18 +135,9 @@ namespace WorkerHrEmail.Model
         {
             if (obj == null) 
                 return null;
-            //if (obj == DBNull.Value)
-            //    return null;
-            //return Convert.ToDateTime(obj);
-
-            DateTime dt;
-            if (DateTime.TryParseExact(obj.ToString(), "MM/dd/yyyy hh:mm:ss tt", null, DateTimeStyles.None, out dt))
-                return dt;
-            if (DateTime.TryParseExact(obj.ToString(), "MM/dd/yyyy h:mm:ss tt", null, DateTimeStyles.None, out dt))
-                return dt;
-
-
-            return null;
+            if (obj == DBNull.Value)
+                return null;
+            return Convert.ToDateTime(obj);
         }
 
         /// <summary>
@@ -153,7 +148,10 @@ namespace WorkerHrEmail.Model
         /// <returns></returns>
         public static bool WasWellcomeEmail(this MSSqlConnection db, User user)
         {
-            var userReceived = db.GetItem($"SELECT * FROM [HR].[dbo].[UserReceivedEmail] WHERE EmployeeId = {user.EmployeeId}");
+            var userReceived = db.GetItem($"SELECT * FROM [HR].[dbo].[UserReceivedEmail] WHERE EmployeeId = @EmployeeId", 
+                new DbParameter[] {
+                    new SqlParameter("@EmployeeId", user.EmployeeId)
+                });
             if (userReceived == null ) return false;
 
             return MSSQL2DT(userReceived["WellcomeEmail"]) != null;
@@ -161,15 +159,19 @@ namespace WorkerHrEmail.Model
 
         public static bool WasOneYearEmail(this MSSqlConnection db, User user)
         {
-            var userReceived = db.GetItem($"SELECT * FROM [HR].[dbo].[UserReceivedEmail] WHERE EmployeeId = {user.EmployeeId}");
+            var userReceived = db.GetItem($"SELECT * FROM [HR].[dbo].[UserReceivedEmail] WHERE EmployeeId = @EmployeeId", 
+                new DbParameter[] {
+                    new SqlParameter("@EmployeeId", user.EmployeeId)
+                });
             if (userReceived == null) return false;
             return MSSQL2DT(userReceived["OneYearEmail"]) != null;
         }
 
-        public static string ToMSSQLDate(this DateTime dt)
-        {
-            return dt.ToString("yyyy-MM-dd HH:mm:ss");
-        }
+        //public static string ToMSSQLDate(this DateTime dt)
+        //{
+        //    return dt.ToString("yyyy-MM-dd HH:mm:ss");
+        //}
+
 
         /// <summary>
         /// Ставим отметку в БД, что пользователь уже получил wellcome письмо
@@ -178,41 +180,73 @@ namespace WorkerHrEmail.Model
         /// <param name="user"></param>
         public static void UserReceivedWellcomeEmail(this MSSqlConnection db, User user)
         {
-            var data = db.GetItem($"SELECT * FROM [HR].[dbo].[UserReceivedEmail] WHERE EmployeeId = {user.EmployeeId}");
+            var data = db.GetItem($"SELECT * FROM [HR].[dbo].[UserReceivedEmail] WHERE EmployeeId = @EmployeeId", 
+                new DbParameter[] {
+                   new SqlParameter("@EmployeeId", user.EmployeeId)
+                }
+            );
             if (data == null)
             {
+                //db.Query(@"INSERT INTO [HR].[dbo].[UserReceivedEmail] (EmployeeId, WellcomeEmail, OneYearEmail) " +
+                //                    $@"VALUES ({user.EmployeeId}, '{DateTime.Now.ToMSSQLDate()}', null)");
                 db.Query(@"INSERT INTO [HR].[dbo].[UserReceivedEmail] (EmployeeId, WellcomeEmail, OneYearEmail) " +
-                    $@"VALUES ({user.EmployeeId}, '{DateTime.Now.ToMSSQLDate()}', null)");
+                    $@"VALUES (@EmployeeId, @dt, null)",
+                    new DbParameter[] {
+                        new SqlParameter("@EmployeeId", user.EmployeeId),
+                        new SqlParameter("@dt", DateTime.Now)
+                    });
             }
             else
             {
-                db.Query($@"UPDATE [HR].[dbo].[UserReceivedEmail] SET WellcomeEmail = '{DateTime.Now.ToMSSQLDate()}' WHERE EmployeeID={user.EmployeeId}");
+                db.Query($@"UPDATE [HR].[dbo].[UserReceivedEmail] SET WellcomeEmail = @dt WHERE EmployeeID=@EmployeeId", 
+                    new DbParameter[] {
+                        new SqlParameter("@EmployeeId", user.EmployeeId),
+                        new SqlParameter("@dt", DateTime.Now)
+                    });
             }
         }
 
         public static void ReportedWellcomeEmail(this MSSqlConnection db, int employeeId)
         {
-            db.Query($@"UPDATE [HR].[dbo].[UserReceivedEmail] SET ReportWellcome = '{DateTime.Now.ToMSSQLDate()}' WHERE EmployeeID={employeeId}");
+            db.Query($@"UPDATE [HR].[dbo].[UserReceivedEmail] SET ReportWellcome = @dt WHERE EmployeeID=@EmployeeId", 
+                new DbParameter[] {
+                    new SqlParameter("@EmployeeId", employeeId),
+                    new SqlParameter("@dt", DateTime.Now)
+            });
         }
-
 
         public static void UserReceivedOneYearEmail(this MSSqlConnection db, User user)
         {
-            var data = db.GetItem($"SELECT * FROM [HR].[dbo].[UserReceivedEmail] WHERE EmployeeId = {user.EmployeeId}");
+            var data = db.GetItem($"SELECT * FROM [HR].[dbo].[UserReceivedEmail] WHERE EmployeeId = @EmployeeId", 
+                new DbParameter[] {
+                    new SqlParameter("@EmployeeId", user.EmployeeId)
+                });
             if (data == null)
             {
                 db.Query(@"INSERT INTO [HR].[dbo].[UserReceivedEmail] (EmployeeId, WellcomeEmail, OneYearEmail) " +
-                    $@"VALUES ({user.EmployeeId}, null, '{DateTime.Now.ToMSSQLDate()}')"); //ставим заодно и wellcome ибо проработал год, всяко должен был получить
+                    $@"VALUES (@EmployeeId, null, @dt)", 
+                    new DbParameter[] {
+                        new SqlParameter("@EmployeeId", user.EmployeeId),
+                        new SqlParameter("@dt", DateTime.Now)
+                    }); //ставим заодно и wellcome ибо проработал год, всяко должен был получить
             }
             else
             {
-                db.Query($@"UPDATE [HR].[dbo].[UserReceivedEmail] SET OneYearEmail = '{DateTime.Now.ToMSSQLDate()}' WHERE EmployeeID={user.EmployeeId}");
+                db.Query($@"UPDATE [HR].[dbo].[UserReceivedEmail] SET OneYearEmail = @dt WHERE EmployeeID=@EmployeeId", 
+                    new DbParameter[] {
+                        new SqlParameter("@EmployeeId", user.EmployeeId),
+                        new SqlParameter("@dt", DateTime.Now)
+                    });
             }
         }
 
         public static void ReportedOneYearEmail(this MSSqlConnection db, int employeeId)
         {
-            db.Query($@"UPDATE [HR].[dbo].[UserReceivedEmail] SET ReportOneYear = '{DateTime.Now.ToMSSQLDate()}' WHERE EmployeeID={employeeId}");
+            db.Query($@"UPDATE [HR].[dbo].[UserReceivedEmail] SET ReportOneYear = @dt WHERE EmployeeID=@EmployeeId", 
+                new DbParameter[] {
+                    new SqlParameter("@EmployeeId", employeeId),
+                    new SqlParameter("@dt", DateTime.Now)
+                });
         }
     }
 }
