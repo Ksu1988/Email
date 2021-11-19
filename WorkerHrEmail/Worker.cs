@@ -90,7 +90,7 @@ namespace WorkerHrEmail
                 
                     foreach (var user in users)
                     {
-                        if (!conn.WasWellcomeEmail(user)) //этому работнику еще не отсылали
+                       if (!conn.WasWellcomeEmail(user)) //этому работнику еще не отсылали
                         {
                             _logger.LogInformation($"sending email for {user.EmployeeId} ({user.Mail})");
                             //формируем письмо
@@ -107,8 +107,7 @@ namespace WorkerHrEmail
                             }
                             _logger.LogInformation($"email for {user.EmployeeId} ({user.Mail}) was sent");
                         }
-                    }
-                
+                    }                
             }
             _logger.LogInformation("wellcome emails comleted");
         }
@@ -128,7 +127,7 @@ namespace WorkerHrEmail
                         && user.FirstDate.Value.Year == DateTime.Now.Year - 1
                         && user.FirstDate.Value.Month == DateTime.Now.Month
                         && user.FirstDate.Value.Day == DateTime.Now.Day
-                        ) 
+                        )
                     {
                         _logger.LogInformation($"sending email for {user.EmployeeId} ({user.Mail})");
                         //формируем письмо
