@@ -45,7 +45,7 @@ build_job:
     - dotnet build -c Release
   artifacts:
     paths:
-    - workerhremail/
+    - workeruserspy/
   tags:
     - cba-q
 #     - MyTest
