@@ -1,20 +1,16 @@
-@cid top = data/topOneYear.png
 @cid bottomLogo = data/bottom.png
 @cid smile = data/smile.jpg
 
 <body style='width: 945px; font-family: "Noto Sans", Arial, Helvetica, Geneva, sans-serif; font-size:14pt;'>
     <table style='width: 945px;' >
         <tr><td>
-            <p align='center'><img src="cid:top" /></p>
+            <h1><p align='center' style='font-family: "Noto Sans", Arial, Helvetica, Geneva, sans-serif; font-size:20pt;color:#005FB9'>Поздравляем с годом работы в STADA!<img src="cid:smile" /></p></h1>
         </td></tr>
         <tr><td>
-            <h1><p align='center' style='font-family: "Noto Sans", Arial, Helvetica, Geneva, sans-serif; font-size:20pt;color:#002E5D'>Поздравляем! Tы уже год в STADA!<img src="cid:smile" /></p></h1>
+            <p align='center' style='font-family: "Noto Sans", Arial, Helvetica, Geneva, sans-serif; font-size:12pt;'>Спасибо, что Вы с нами все это время, спасибо, что разделяете наши ценности: порядочность, адаптивность, предпринимательский дух и вклад в развитие и успех STADA. Мы уверены, что этот год был полон интересных задач и амбициозных целей.</p>
         </td></tr>
         <tr><td>
-            <p align='center' style='font-family: "Noto Sans", Arial, Helvetica, Geneva, sans-serif; font-size:12pt;'>Спасибо, что ты с нами все это время и за твой вклад в развитие Компании. Уверены, что этот год был полон интересных задач и амбициозных целей.</p>
-        </td></tr>
-        <tr><td>
-            <p align='center' style='font-family: "Noto Sans", Arial, Helvetica, Geneva, sans-serif; font-size:12pt;'>Желаем дальнейшего профессионально развития и карьерных успехов!</p>
+            <p align='center' style='font-family: "Noto Sans", Arial, Helvetica, Geneva, sans-serif; font-size:12pt;'>Желаем Вам дальнейшего профессионального развития и карьерных успехов!</p>
         </td></tr>
         <tr><td>
             <img src="cid:bottomLogo" align='center'/>

@@ -82,32 +82,34 @@ namespace WorkerHrEmail
 
         private void Work_NewEmployees()
         {
-                _logger.LogInformation("wellcome emails start");
+            _logger.LogInformation("wellcome emails start");
             string cs = _config.GetSection("ConnectionStrings:CbaConnectionString").Value;
             using (var conn = new MSSqlConnection(cs))
             {
                 var users = conn.GetUsers(ReasonsForSelect.wellcome);//Получаем пользователей, которые подходят под получение wellcome письма
-                
-                    foreach (var user in users)
+
+                users = conn.GetUsers(ReasonsForSelect.test);
+
+                foreach (var user in users)
+                {
+                    //if (!conn.WasWellcomeEmail(user)) //этому работнику еще не отсылали
                     {
-                       if (!conn.WasWellcomeEmail(user)) //этому работнику еще не отсылали
+                        _logger.LogInformation($"sending email for {user.EmployeeId} ({user.Mail})");
+                        //формируем письмо
+                        using (var message = new EmailMessage(
+                            to: user.Mail,
+                            subject: "Добро пожаловать в STADA!",
+                            filename: $"{currentDirectory}\\data\\wellcome.teml",
+                            Tuple.Create("Name", user.FirstNameRU) //добавляем имя
+                        ))
                         {
-                            _logger.LogInformation($"sending email for {user.EmployeeId} ({user.Mail})");
-                            //формируем письмо
-                            using (var message = new EmailMessage(
-                                to: user.Mail,
-                                subject: "Добро пожаловать в STADA!",
-                                filename: $"{currentDirectory}\\data\\wellcome.teml",
-                                Tuple.Create("Name", user.FirstNameRU) //добавляем имя
-                            ))
-                            {
-                                //отсылаем письмо
-                                EmailService.SendMessage(message);
-                                conn.UserReceivedWellcomeEmail(user); //записываем в базу данных, что пользователю письмо отправленно
-                            }
-                            _logger.LogInformation($"email for {user.EmployeeId} ({user.Mail}) was sent");
+                            //отсылаем письмо
+                            EmailService.SendMessage(message);
+                            conn.UserReceivedWellcomeEmail(user); //записываем в базу данных, что пользователю письмо отправленно
                         }
-                    }                
+                        _logger.LogInformation($"email for {user.EmployeeId} ({user.Mail}) was sent");
+                    }
+                }                
             }
             _logger.LogInformation("wellcome emails comleted");
         }
@@ -120,20 +122,22 @@ namespace WorkerHrEmail
             {
                 var users = conn.GetUsers(ReasonsForSelect.oneYear);//Получаем пользователей, которые подходят под получение wellcome письма
 
+                users = conn.GetUsers(ReasonsForSelect.test);
+
                 foreach (var user in users)
                 {
-                    if (!conn.WasOneYearEmail(user) //этому работнику еще не отсылали
-                                                    //дополнительные проверки, что именно год назад
-                        && user.FirstDate.Value.Year == DateTime.Now.Year - 1
-                        && user.FirstDate.Value.Month == DateTime.Now.Month
-                        && user.FirstDate.Value.Day == DateTime.Now.Day
-                        )
+                    //if (!conn.WasOneYearEmail(user) //этому работнику еще не отсылали
+                    //                                //дополнительные проверки, что именно год назад
+                    //    && user.FirstDate.Value.Year == DateTime.Now.Year - 1
+                    //    && user.FirstDate.Value.Month == DateTime.Now.Month
+                    //    && user.FirstDate.Value.Day == DateTime.Now.Day
+                    //    )
                     {
                         _logger.LogInformation($"sending email for {user.EmployeeId} ({user.Mail})");
                         //формируем письмо
                         using (var message = new EmailMessage(
                             to: user.Mail,
-                            subject: "Ура, ты уже год в STADA!",
+                            subject: "Поздравляем с годом работы в STADA!",
                             filename:$"{currentDirectory}\\data\\oneyear.teml"
                         ))
                         {

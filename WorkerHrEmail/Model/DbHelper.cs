@@ -13,7 +13,7 @@ using System.Text;
 
 namespace WorkerHrEmail.Model
 {
-    public enum ReasonsForSelect { wellcome, oneYear }
+    public enum ReasonsForSelect { wellcome, oneYear, test }
     public static class DbHelper
     {
         private static string sqlForWellcomeEmail = @"
@@ -54,6 +54,24 @@ namespace WorkerHrEmail.Model
                 and firstdate <= GETDATE() - 360
             order by 2 desc";
 
+        private static string sqlForTest = @"
+            select * from
+            (
+	            SELECT [main].[EmployeeID]
+		              ,MIN([DateStart]) firstdate
+		              ,[Core].[dbo].[User].[Mail]
+		              ,[Core].[dbo].[User].[FirstNameRU]
+	            FROM [Core].[dbo].[MovementHistory] main   
+	               inner join [Core].[dbo].[User] on ([Core].[dbo].[User].[EmployeeID] = [main].[EmployeeID])
+	            where 
+		            Mail is not null 
+		            and DateFinish is null	
+                    and StatusID = 1
+	            group by [main].[EmployeeID], [Core].[dbo].[User].[Mail],[Core].[dbo].[User].[FirstNameRU]
+            ) as main
+            where [main].[EmployeeID] = 11224
+            order by 2 desc";
+
         private static string sqlForReport = @"
             SELECT hist.*, 
 	            DATEDIFF(day, WellcomeEmail, GETDATE()) diff1,
@@ -76,8 +94,12 @@ namespace WorkerHrEmail.Model
         /// <returns></returns>
         public static IEnumerable<User> GetUsers(this MSSqlConnection db, ReasonsForSelect reason)
         {
-            var rawItems = db.GetItems(reason == ReasonsForSelect.wellcome?  sqlForWellcomeEmail: sqlForOneYearEmail, 
+            var rawItems = db.GetItems(reason == ReasonsForSelect.wellcome?  
+                sqlForWellcomeEmail: sqlForOneYearEmail, 
                 new DbParameter[] { });
+
+            if (reason == ReasonsForSelect.test)
+                rawItems = db.GetItems(sqlForTest, new DbParameter[] { });
 
             var res = new List<User>();
             foreach(var row in rawItems)
