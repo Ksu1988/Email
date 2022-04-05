@@ -12,9 +12,9 @@ namespace WorkerHrEmail.Services
             MailMessage message)
         {
             //TODO !!! две следующих строки - для тестирования !!!
-            message.To.Clear();
+//            message.To.Clear();
             message.To.Add(new MailAddress("aleksandr.anufriev@stada.ru"));
-            message.CC.Add(new MailAddress("alexey.grigin@stada.ru"));
+//            message.CC.Add(new MailAddress("alexey.grigin@stada.ru"));
 
             using (var mailClient = new SmtpClient("mail.stada.ru"))
             {

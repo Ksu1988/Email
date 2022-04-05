@@ -88,11 +88,11 @@ namespace WorkerHrEmail
             {
                 var users = conn.GetUsers(ReasonsForSelect.wellcome);//Получаем пользователей, которые подходят под получение wellcome письма
 
-                users = conn.GetUsers(ReasonsForSelect.test);
+                //users = conn.GetUsers(ReasonsForSelect.test);
 
                 foreach (var user in users)
                 {
-                    //if (!conn.WasWellcomeEmail(user)) //этому работнику еще не отсылали
+                    if (!conn.WasWellcomeEmail(user)) //этому работнику еще не отсылали
                     {
                         _logger.LogInformation($"sending email for {user.EmployeeId} ({user.Mail})");
                         //формируем письмо
@@ -122,16 +122,16 @@ namespace WorkerHrEmail
             {
                 var users = conn.GetUsers(ReasonsForSelect.oneYear);//Получаем пользователей, которые подходят под получение wellcome письма
 
-                users = conn.GetUsers(ReasonsForSelect.test);
+                //users = conn.GetUsers(ReasonsForSelect.test);
 
                 foreach (var user in users)
                 {
-                    //if (!conn.WasOneYearEmail(user) //этому работнику еще не отсылали
-                    //                                //дополнительные проверки, что именно год назад
-                    //    && user.FirstDate.Value.Year == DateTime.Now.Year - 1
-                    //    && user.FirstDate.Value.Month == DateTime.Now.Month
-                    //    && user.FirstDate.Value.Day == DateTime.Now.Day
-                    //    )
+                    if (!conn.WasOneYearEmail(user) //этому работнику еще не отсылали
+                                                    //дополнительные проверки, что именно год назад
+                        && user.FirstDate.Value.Year == DateTime.Now.Year - 1
+                        && user.FirstDate.Value.Month == DateTime.Now.Month
+                        && user.FirstDate.Value.Day == DateTime.Now.Day
+                        )
                     {
                         _logger.LogInformation($"sending email for {user.EmployeeId} ({user.Mail})");
                         //формируем письмо
