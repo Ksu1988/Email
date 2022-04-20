@@ -17,42 +17,54 @@ namespace WorkerHrEmail.Model
     public static class DbHelper
     {
         private static string sqlForWellcomeEmail = @"
+            use Global_N;
             select * from
-            (
-	            SELECT [main].[EmployeeID]
-		              ,MIN([DateStart]) firstdate
-		              ,[Core].[dbo].[User].[Mail]
-		              ,[Core].[dbo].[User].[FirstNameRU]
-	            FROM [Core].[dbo].[MovementHistory] main   
-	               inner join [Core].[dbo].[User] on ([Core].[dbo].[User].[EmployeeID] = [main].[EmployeeID])
-	            where 
-		            Mail is not null 
-		            and DateFinish is null	
-                    and StatusID = 1
-	            group by [main].[EmployeeID], [Core].[dbo].[User].[Mail],[Core].[dbo].[User].[FirstNameRU]
-            ) as main
-            where firstdate >= GETDATE() - 2
-                and Mail is not null
-            order by 2 desc";
+                (
+					    SELECT 
+						    main.Id_Pers
+						    ,(SELECT MIN(DateIN) FROM Staff_Movement WHERE Id_Pers = main.Id_Pers AND Id_Status = 1) AS firstdate
+						    ,Staff_Mail.Mail
+						    ,Staff_Personnel.Nam
+					    FROM Staff_Movement main   
+						    inner join Staff_Personnel on (Staff_Personnel.Id_Pers = main.Id_Pers)
+						    INNER JOIN Staff_Mail ON (Staff_Mail.Id_Pers = main.Id_Pers)						
+						    INNER JOIN Staff_Profession ON (Staff_Profession.Id_ProfUniq = main.Id_ProfUniq)
+					    where 
+						    Staff_Mail.Mail is not null 
+						    AND main.DateOUT > CURDATE()
+						    AND Staff_Profession.Id_Cat <> 0
+						    AND main.Id_Status = 1
+					    group by main.Id_Pers, Staff_Mail.Mail, Staff_Personnel.Nam
+                ) as main
+                where firstdate >= DATE_ADD(CURDATE(), INTERVAL -2 DAY)
+                    and main.Mail is not null
+                order by 2 desc
+        ";
 
         private static string sqlForOneYearEmail = @"
+            use Global_N;
             select * from
             (
-	            SELECT [main].[EmployeeID]
-		              ,MIN([DateStart]) firstdate
-		              ,[Core].[dbo].[User].[Mail]
-		              ,[Core].[dbo].[User].[FirstNameRU]
-	            FROM [Core].[dbo].[MovementHistory] main   
-	               inner join [Core].[dbo].[User] on ([Core].[dbo].[User].[EmployeeID] = [main].[EmployeeID])
-	            where 
-		            Mail is not null 
-		            and DateFinish is null	
-                    and StatusID = 1
-	            group by [main].[EmployeeID], [Core].[dbo].[User].[Mail],[Core].[dbo].[User].[FirstNameRU]
+               SELECT main.Id_Pers
+		            ,(SELECT MIN(DateIN) FROM Staff_Movement WHERE Id_Pers = main.Id_Pers AND Id_Status = 1) AS firstdate
+		            ,Staff_Mail.Mail
+		            ,Staff_Personnel.Nam
+               FROM Staff_Movement main
+		            inner join Staff_Personnel on (Staff_Personnel.Id_Pers = main.Id_Pers)
+		            INNER JOIN Staff_Mail ON (Staff_Mail.Id_Pers = main.Id_Pers)						
+		            INNER JOIN Staff_Profession ON (Staff_Profession.Id_ProfUniq = main.Id_ProfUniq)
+               where 
+                  Staff_Mail.Mail is not NULL 
+		            AND main.DateOUT > CURDATE()
+		            AND Staff_Profession.Id_Cat <> 0
+		            AND main.Id_Status = 1
+               group by main.Id_Pers, Staff_Mail.Mail, Staff_Personnel.Nam
             ) as main
-            where firstdate >= GETDATE() - 370
-                and firstdate <= GETDATE() - 360
-            order by 2 desc";
+            WHERE 
+	             firstdate >= DATE_ADD(CURDATE(), INTERVAL -370 DAY)
+            AND firstdate <= DATE_ADD(CURDATE(), INTERVAL -360 DAY)
+            order by 2 desc
+";
 
         private static string sqlForTest = @"
             select * from
@@ -92,7 +104,7 @@ namespace WorkerHrEmail.Model
         /// </summary>
         /// <param name="db"></param>
         /// <returns></returns>
-        public static IEnumerable<User> GetUsers(this MSSqlConnection db, ReasonsForSelect reason)
+        public static IEnumerable<User> GetUsers(this MySqlConnection db, ReasonsForSelect reason)
         {
             var rawItems = db.GetItems(reason == ReasonsForSelect.wellcome?  
                 sqlForWellcomeEmail: sqlForOneYearEmail, 
@@ -106,10 +118,10 @@ namespace WorkerHrEmail.Model
             {
                 var u = new User()
                 {
-                    EmployeeId = row["EmployeeID"].ToInt32(),
-                    FirstNameRU = row["FirstNameRU"].ToString(),
+                    EmployeeId = row["Id_Pers"].ToInt32(),
+                    FirstNameRU = row["Nam"].ToString(),
                     Mail = row["Mail"].ToString(),
-                    FirstDate = MSSQL2DT(row["FirstDate"])
+                    FirstDate = MSSQL2DT(row["firstdate"])
                 };
 
                 //var patt = "dd/MM/yyyy hh:mm:ss tt";

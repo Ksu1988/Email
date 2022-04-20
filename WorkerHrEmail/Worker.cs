@@ -84,7 +84,8 @@ namespace WorkerHrEmail
         {
             _logger.LogInformation("wellcome emails start");
             string cs = _config.GetSection("ConnectionStrings:CbaConnectionString").Value;
-            using (var conn = new MSSqlConnection(cs))
+            using (var hr = new MSSqlConnection(cs))
+            using (var conn = new MySqlConnection(MySqlServer.Main))
             {
                 var users = conn.GetUsers(ReasonsForSelect.wellcome);//Получаем пользователей, которые подходят под получение wellcome письма
 
@@ -92,7 +93,7 @@ namespace WorkerHrEmail
 
                 foreach (var user in users)
                 {
-                    if (!conn.WasWellcomeEmail(user)) //этому работнику еще не отсылали
+                    if (!hr.WasWellcomeEmail(user)) //этому работнику еще не отсылали
                     {
                         _logger.LogInformation($"sending email for {user.EmployeeId} ({user.Mail})");
                         //формируем письмо
@@ -105,11 +106,11 @@ namespace WorkerHrEmail
                         {
                             //отсылаем письмо
                             EmailService.SendMessage(message);
-                            conn.UserReceivedWellcomeEmail(user); //записываем в базу данных, что пользователю письмо отправленно
+                            hr.UserReceivedWellcomeEmail(user); //записываем в базу данных, что пользователю письмо отправленно
                         }
                         _logger.LogInformation($"email for {user.EmployeeId} ({user.Mail}) was sent");
                     }
-                }                
+                }
             }
             _logger.LogInformation("wellcome emails comleted");
         }
@@ -118,7 +119,8 @@ namespace WorkerHrEmail
         {
             _logger.LogInformation("one year email start");
             string cs = _config.GetSection("ConnectionStrings:CbaConnectionString").Value;
-            using (var conn = new MSSqlConnection(cs))
+            using (var hr = new MSSqlConnection(cs))
+            using (var conn = new MySqlConnection(MySqlServer.Main))
             {
                 var users = conn.GetUsers(ReasonsForSelect.oneYear);//Получаем пользователей, которые подходят под получение wellcome письма
 
@@ -126,7 +128,7 @@ namespace WorkerHrEmail
 
                 foreach (var user in users)
                 {
-                    if (!conn.WasOneYearEmail(user) //этому работнику еще не отсылали
+                    if (!hr.WasOneYearEmail(user) //этому работнику еще не отсылали
                                                     //дополнительные проверки, что именно год назад
                         && user.FirstDate.Value.Year == DateTime.Now.Year - 1
                         && user.FirstDate.Value.Month == DateTime.Now.Month
@@ -143,7 +145,7 @@ namespace WorkerHrEmail
                         {
                             //отсылаем письмо
                             EmailService.SendMessage(message);
-                            conn.UserReceivedOneYearEmail(user); //записываем в базу данных, что пользователю письмо отправленно
+                            hr.UserReceivedOneYearEmail(user); //записываем в базу данных, что пользователю письмо отправленно
                         }
                         _logger.LogInformation($"email for {user.EmployeeId} ({user.Mail}) was sent");
                     }
