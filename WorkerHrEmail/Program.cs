@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.EventLog;
 using Microsoft.Extensions.Configuration;
+using WorkerHrEmail.Services;
 
 namespace WorkerHrEmail
 {
@@ -41,7 +42,7 @@ namespace WorkerHrEmail
                 {
                     IConfiguration configuration = hostContext.Configuration;
                     services.AddSingleton(configuration);
-
+                    services.AddSingleton<EmailService>();
                     services.AddHostedService<Worker>();
                 });
     }

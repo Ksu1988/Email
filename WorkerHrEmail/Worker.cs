@@ -4,9 +4,6 @@ using Microsoft.Extensions.Logging;
 using SCCBA.DB;
 using SCCBA.Extensions;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,12 +12,13 @@ using WorkerHrEmail.Model;
 using WorkerHrEmail.Services;
 
 namespace WorkerHrEmail
-{    
+{
 
     public class Worker : IHostedService, IDisposable
     {
         private readonly ILogger<Worker> _logger;
         private readonly IConfiguration _config;
+        private readonly EmailService _emailService;
         private static object _lock = new object();
         private int _counter = 0;
 
@@ -28,10 +26,11 @@ namespace WorkerHrEmail
 
         private string currentDirectory = System.AppDomain.CurrentDomain.BaseDirectory;
 
-        public Worker(ILogger<Worker> logger, IConfiguration configuration)
+        public Worker(ILogger<Worker> logger, IConfiguration configuration, EmailService emailService)
         {
             _logger = logger;
             _config = configuration;
+            _emailService = emailService;
         }
 
         public void Dispose()
@@ -62,12 +61,14 @@ namespace WorkerHrEmail
                 {
                     _logger.LogDebug($"Running DoWork iteration {_counter}");
 
-                    Work_NewEmployees();
-                    Work_OneYearEmployees();
+                    //Work_NewEmployees();
+                    //Work_OneYearEmployees();
+                    Work_ComplienceEmployees();
                     Work_Report();
 
                     _logger.LogDebug($"DoWork {_counter} finished, will start iteration {_counter + 1}");
                 }
+                
                 catch (Exception e)
                 {
                     _logger.LogCritical($"{e.Message}\r\n{e.StackTrace}");
@@ -87,7 +88,7 @@ namespace WorkerHrEmail
             using (var hr = new MSSqlConnection(cs))
             using (var conn = new MySqlConnection(MySqlServer.Main))
             {
-                var users = conn.GetUsers(ReasonsForSelect.wellcome);//Получаем пользователей, которые подходят под получение wellcome письма
+                var users = conn.GetUsers(ReasonsForSelect.Wellcome);//Получаем пользователей, которые подходят под получение wellcome письма
 
                 //users = conn.GetUsers(ReasonsForSelect.test);
 
@@ -101,11 +102,12 @@ namespace WorkerHrEmail
                             to: user.Mail,
                             subject: "Добро пожаловать в STADA!",
                             filename: $"{currentDirectory}\\data\\wellcome.teml",
+                            null,
                             Tuple.Create("Name", user.FirstNameRU) //добавляем имя
                         ))
                         {
                             //отсылаем письмо
-                            EmailService.SendMessage(message);
+                            _emailService.SendMessage(message);
                             hr.UserReceivedWellcomeEmail(user); //записываем в базу данных, что пользователю письмо отправленно
                         }
                         _logger.LogInformation($"email for {user.EmployeeId} ({user.Mail}) was sent");
@@ -122,7 +124,7 @@ namespace WorkerHrEmail
             using (var hr = new MSSqlConnection(cs))
             using (var conn = new MySqlConnection(MySqlServer.Main))
             {
-                var users = conn.GetUsers(ReasonsForSelect.oneYear);//Получаем пользователей, которые подходят под получение wellcome письма
+                var users = conn.GetUsers(ReasonsForSelect.OneYear);//Получаем пользователей, которые подходят под получение wellcome письма
 
                 //users = conn.GetUsers(ReasonsForSelect.test);
 
@@ -139,12 +141,12 @@ namespace WorkerHrEmail
                         //формируем письмо
                         using (var message = new EmailMessage(
                             to: user.Mail,
-                            subject: "Поздравляем с годом работы в STADA!",
+                            subject: "Поздравляем с годом работы в STADA!",                            
                             filename:$"{currentDirectory}\\data\\oneyear.teml"
                         ))
                         {
                             //отсылаем письмо
-                            EmailService.SendMessage(message);
+                            _emailService.SendMessage(message);
                             hr.UserReceivedOneYearEmail(user); //записываем в базу данных, что пользователю письмо отправленно
                         }
                         _logger.LogInformation($"email for {user.EmployeeId} ({user.Mail}) was sent");
@@ -152,6 +154,48 @@ namespace WorkerHrEmail
                 }
             }
             _logger.LogInformation("one year email comleted");
+        }
+        
+
+        private void Work_ComplienceEmployees()
+        {
+            _logger.LogInformation("compliance and ethics email start");
+            //string cs = _config.GetSection("ConnectionStrings:CbaConnectionString").Value;
+            using (var hr = new MSSqlConnection(cs))
+            using (var conn = new MySqlConnection(MySqlServer.Main))
+            {
+                var users = conn.GetUsers(ReasonsForSelect.OneWeek);//Получаем пользователей, которые подходят под получение письма Команда по комплаенс и этике раз в неделю
+
+                users = conn.GetUsers(ReasonsForSelect.Test);
+
+                foreach (var user in users)
+                {
+                    //if (!hr.WasOneYearEmail(user) //этому работнику еще не отсылали
+                    //                              //дополнительные проверки, что именно год назад
+                    //    && user.FirstDate.Value.Year == DateTime.Now.Year - 1
+                    //    && user.FirstDate.Value.Month == DateTime.Now.Month
+                    //    && user.FirstDate.Value.Day == DateTime.Now.Day
+                    //    )
+                    //{
+                        _logger.LogInformation($"sending email for {user.EmployeeId} ({user.Mail})");
+                        //формируем письмо
+                        using (var message = new EmailMessage(
+                            to: user.Mail,                           
+                            subject: "Для новых сотрудников: полезные материалы Группы по комплаенс и этике ",
+                            filename:$"{currentDirectory}\\data\\oneWeek.html" +
+                            $"",
+                            from: "compliance@stada.ru"
+                        ))
+                        {
+                        //отсылаем письмо
+                        _emailService.SendMessage(message);
+                            //hr.UserReceivedOneYearEmail(user); //записываем в базу данных, что пользователю письмо отправленно
+                        }
+                        _logger.LogInformation($"email for {user.EmployeeId} ({user.Mail}) was sent");
+                    //}
+                }
+            }
+            _logger.LogInformation("one week email comleted");
         }
 
 
@@ -174,7 +218,7 @@ namespace WorkerHrEmail
                         using (var message = new EmailReport(_config.GetSection("Email:ForReport").Value, history.ToArray()))
                         {
                             //отсылаем письмо
-                            EmailService.SendMessage(message);
+                            _emailService.SendMessage(message);
                             //отмечаем у всех пользователей, что мы отчитались по отправке писем
                             foreach (var user in history)
                             {

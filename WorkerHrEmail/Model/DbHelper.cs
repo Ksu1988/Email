@@ -2,18 +2,11 @@
 using SCCBA.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
-using System.Data.SqlTypes;
-using System.Diagnostics;
-using System.Globalization;
-using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace WorkerHrEmail.Model
 {
-    public enum ReasonsForSelect { wellcome, oneYear, test }
     public static class DbHelper
     {
         private static string sqlForWellcomeEmail = @"
@@ -65,6 +58,31 @@ namespace WorkerHrEmail.Model
             AND firstdate <= DATE_ADD(CURDATE(), INTERVAL -360 DAY)
             order by 2 desc
 ";
+        
+        private static string sqlForOneWeekEmail = @"
+            use Global_N;
+            select * from
+            (
+               SELECT main.Id_Pers
+		            ,(SELECT MIN(DateIN) FROM Staff_Movement WHERE Id_Pers = main.Id_Pers AND Id_Status = 1) AS firstdate
+		            ,Staff_Mail.Mail
+		            ,Staff_Personnel.Nam
+               FROM Staff_Movement main
+		            inner join Staff_Personnel on (Staff_Personnel.Id_Pers = main.Id_Pers)
+		            INNER JOIN Staff_Mail ON (Staff_Mail.Id_Pers = main.Id_Pers)						
+		            INNER JOIN Staff_Profession ON (Staff_Profession.Id_ProfUniq = main.Id_ProfUniq)
+               where 
+                  Staff_Mail.Mail is not NULL 
+		            AND main.DateOUT > CURDATE()
+		            AND Staff_Profession.Id_Cat <> 0
+		            AND main.Id_Status = 1
+               group by main.Id_Pers, Staff_Mail.Mail, Staff_Personnel.Nam
+            ) as main
+            WHERE 
+	             firstdate >= DATE_ADD(CURDATE(), INTERVAL - 7 DAY)
+            AND firstdate <= DATE_ADD(CURDATE(), INTERVAL - 1 DAY)
+            order by 2 desc
+";      
 
         private static string sqlForTest = @"
             select * from
@@ -81,7 +99,7 @@ namespace WorkerHrEmail.Model
                     and StatusID = 1
 	            group by [main].[EmployeeID], [Core].[dbo].[User].[Mail],[Core].[dbo].[User].[FirstNameRU]
             ) as main
-            where [main].[EmployeeID] = 11224
+            where [main].[EmployeeID] = 12203
             order by 2 desc";
 
         private static string sqlForReport = @"
@@ -106,11 +124,25 @@ namespace WorkerHrEmail.Model
         /// <returns></returns>
         public static IEnumerable<User> GetUsers(this MySqlConnection db, ReasonsForSelect reason)
         {
-            var rawItems = db.GetItems(reason == ReasonsForSelect.wellcome?  
-                sqlForWellcomeEmail: sqlForOneYearEmail, 
-                new DbParameter[] { });
+            var queryString = "";
+            switch (reason)
+            {
+                case ReasonsForSelect.Wellcome:
+                    queryString = sqlForWellcomeEmail;
+                    break;
+                case ReasonsForSelect.OneYear:
+                    queryString = sqlForOneYearEmail;
+                    break;              
+                case ReasonsForSelect.OneWeek:
+                    queryString = sqlForOneWeekEmail;
+                    break;
+                default:
+                    queryString = sqlForOneWeekEmail;
+                    break;
+            }
+            var rawItems = db.GetItems(queryString,new DbParameter[] { });
 
-            if (reason == ReasonsForSelect.test)
+            if (reason == ReasonsForSelect.Test)
                 rawItems = db.GetItems(sqlForTest, new DbParameter[] { });
 
             var res = new List<User>();
