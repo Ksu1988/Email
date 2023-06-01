@@ -64,7 +64,7 @@ namespace WorkerHrEmail
                     //Work_NewEmployees();
                     //Work_OneYearEmployees();
                     Work_ComplienceEmployees();
-                    Work_Report();
+                    //Work_Report();
 
                     _logger.LogDebug($"DoWork {_counter} finished, will start iteration {_counter + 1}");
                 }
@@ -84,7 +84,7 @@ namespace WorkerHrEmail
         private void Work_NewEmployees()
         {
             _logger.LogInformation("wellcome emails start");
-            string cs = _config.GetSection("ConnectionStrings:CbaConnectionString").Value;
+            string cs = _config.GetSection("ConnectionStrings:CbaConnectionString").Value; // я вот это раскоментировал так как ниже была ошибка из-за cs
             using (var hr = new MSSqlConnection(cs))
             using (var conn = new MySqlConnection(MySqlServer.Main))
             {
@@ -160,16 +160,16 @@ namespace WorkerHrEmail
         private void Work_ComplienceEmployees()
         {
             _logger.LogInformation("compliance and ethics email start");
-            //string cs = _config.GetSection("ConnectionStrings:CbaConnectionString").Value;
+            string cs = _config.GetSection("ConnectionStrings:CbaConnectionString").Value;
             using (var hr = new MSSqlConnection(cs))
             using (var conn = new MySqlConnection(MySqlServer.Main))
             {
-                var users = conn.GetUsers(ReasonsForSelect.OneWeek);//Получаем пользователей, которые подходят под получение письма Команда по комплаенс и этике раз в неделю
+                //var users = conn.GetUsers(ReasonsForSelect.OneWeek);//Получаем пользователей, которые подходят под получение письма Команда по комплаенс и этике раз в неделю
 
-                users = conn.GetUsers(ReasonsForSelect.Test);
+                //users = conn.GetUsers(ReasonsForSelect.Test);
 
-                foreach (var user in users)
-                {
+                // foreach (var user in users)
+                // {
                     //if (!hr.WasOneYearEmail(user) //этому работнику еще не отсылали
                     //                              //дополнительные проверки, что именно год назад
                     //    && user.FirstDate.Value.Year == DateTime.Now.Year - 1
@@ -177,24 +177,23 @@ namespace WorkerHrEmail
                     //    && user.FirstDate.Value.Day == DateTime.Now.Day
                     //    )
                     //{
-                        _logger.LogInformation($"sending email for {user.EmployeeId} ({user.Mail})");
+                        //_logger.LogInformation($"sending email for {user.EmployeeId} ({user.Mail})");
                         //формируем письмо
                         using (var message = new EmailMessage(
-                            to: user.Mail,                           
+                            to: "vitaliy.astakhov@stada.ru", // user.Mail,                           
                             subject: "Для новых сотрудников: полезные материалы Группы по комплаенс и этике ",
-                            filename:$"{currentDirectory}\\data\\oneWeek.html" +
-                            $"",
-                            from: "compliance@stada.ru"
+                            filename:$"{currentDirectory}\\data\\oneWeek.html",
+                            from: "noreply@stada.ru"
                         ))
                         {
                         //отсылаем письмо
                         _emailService.SendMessage(message);
                             //hr.UserReceivedOneYearEmail(user); //записываем в базу данных, что пользователю письмо отправленно
                         }
-                        _logger.LogInformation($"email for {user.EmployeeId} ({user.Mail}) was sent");
+                        //_logger.LogInformation($"email for {user.EmployeeId} ({user.Mail}) was sent");
                     //}
-                }
-            }
+                // }
+            //}
             _logger.LogInformation("one week email comleted");
         }
 
