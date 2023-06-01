@@ -160,23 +160,18 @@ namespace WorkerHrEmail
         private void Work_ComplienceEmployees()
         {
             _logger.LogInformation("compliance and ethics email start");
-            //string cs = _config.GetSection("ConnectionStrings:CbaConnectionString").Value;
+            string cs = _config.GetSection("ConnectionStrings:CbaConnectionString").Value;
             using (var hr = new MSSqlConnection(cs))
             using (var conn = new MySqlConnection(MySqlServer.Main))
             {
                 var users = conn.GetUsers(ReasonsForSelect.OneWeek);//Получаем пользователей, которые подходят под получение письма Команда по комплаенс и этике раз в неделю
 
-                users = conn.GetUsers(ReasonsForSelect.Test);
+               // users = hr.(DbHelper.sqlForTest);
 
                 foreach (var user in users)
                 {
-                    //if (!hr.WasOneYearEmail(user) //этому работнику еще не отсылали
-                    //                              //дополнительные проверки, что именно год назад
-                    //    && user.FirstDate.Value.Year == DateTime.Now.Year - 1
-                    //    && user.FirstDate.Value.Month == DateTime.Now.Month
-                    //    && user.FirstDate.Value.Day == DateTime.Now.Day
-                    //    )
-                    //{
+                    if (!hr.WasOneWeekEmail(user))
+                    {
                         _logger.LogInformation($"sending email for {user.EmployeeId} ({user.Mail})");
                         //формируем письмо
                         using (var message = new EmailMessage(
@@ -188,11 +183,11 @@ namespace WorkerHrEmail
                         ))
                         {
                         //отсылаем письмо
-                        _emailService.SendMessage(message);
-                            //hr.UserReceivedOneYearEmail(user); //записываем в базу данных, что пользователю письмо отправленно
+                            _emailService.SendMessage(message);
+                            hr.UserReceivedOneWeekEmail(user); //записываем в базу данных, что пользователю письмо отправленно
                         }
                         _logger.LogInformation($"email for {user.EmployeeId} ({user.Mail}) was sent");
-                    //}
+                    }
                 }
             }
             _logger.LogInformation("one week email comleted");

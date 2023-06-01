@@ -84,7 +84,7 @@ namespace WorkerHrEmail.Model
             order by 2 desc
 ";      
 
-        private static string sqlForTest = @"
+        public static string sqlForTest = @"
             select * from
             (
 	            SELECT [main].[EmployeeID]
@@ -99,7 +99,7 @@ namespace WorkerHrEmail.Model
                     and StatusID = 1
 	            group by [main].[EmployeeID], [Core].[dbo].[User].[Mail],[Core].[dbo].[User].[FirstNameRU]
             ) as main
-            where [main].[EmployeeID] = 12203
+            where [main].[EmployeeID] = 11451
             order by 2 desc";
 
         private static string sqlForReport = @"
@@ -136,14 +136,14 @@ namespace WorkerHrEmail.Model
                 case ReasonsForSelect.OneWeek:
                     queryString = sqlForOneWeekEmail;
                     break;
+                case ReasonsForSelect.Test:
+                    queryString = sqlForTest;
+                    break;
                 default:
                     queryString = sqlForOneWeekEmail;
                     break;
             }
             var rawItems = db.GetItems(queryString,new DbParameter[] { });
-
-            if (reason == ReasonsForSelect.Test)
-                rawItems = db.GetItems(sqlForTest, new DbParameter[] { });
 
             var res = new List<User>();
             foreach(var row in rawItems)
@@ -233,6 +233,16 @@ namespace WorkerHrEmail.Model
             return MSSQL2DT(userReceived["OneYearEmail"]) != null;
         }
 
+        public static bool WasOneWeekEmail(this MSSqlConnection db, User user)
+        {
+            var userReceived = db.GetItem($"SELECT * FROM [HR].[dbo].[UserReceivedEmail] WHERE EmployeeId = @EmployeeId",
+                new DbParameter[] {
+                    new SqlParameter("@EmployeeId", user.EmployeeId)
+                });
+            if (userReceived == null) return false;
+            return MSSQL2DT(userReceived["OneWeekEmail"]) != null;
+        }
+
         //public static string ToMSSQLDate(this DateTime dt)
         //{
         //    return dt.ToString("yyyy-MM-dd HH:mm:ss");
@@ -305,6 +315,32 @@ namespace WorkerHrEmail.Model
                     });
             }
         }
+
+        public static void UserReceivedOneWeekEmail(this MSSqlConnection db, User user)
+        {
+            var data = db.GetItem($"SELECT * FROM [HR].[dbo].[UserReceivedEmail] WHERE EmployeeId = @EmployeeId",
+               new DbParameter[] {
+                    new SqlParameter("@EmployeeId", user.EmployeeId)
+               });
+            if (data == null)
+            {
+                db.Query(@"INSERT INTO [HR].[dbo].[UserReceivedEmail] (EmployeeId, OneWeekEmail) " +
+                    $@"VALUES (@EmployeeId, @dt)",
+                    new DbParameter[] {
+                        new SqlParameter("@EmployeeId", user.EmployeeId),
+                        new SqlParameter("@dt", DateTime.Now)
+                    }); //ставим заодно и wellcome ибо проработал год, всяко должен был получить
+            }
+            else
+            {
+                db.Query($@"UPDATE [HR].[dbo].[UserReceivedEmail] SET OneWeekEmail = @dt WHERE EmployeeID=@EmployeeId",
+                    new DbParameter[] {
+                        new SqlParameter("@EmployeeId", user.EmployeeId),
+                        new SqlParameter("@dt", DateTime.Now)
+                    });
+            }
+        }
+            
 
         public static void ReportedOneYearEmail(this MSSqlConnection db, int employeeId)
         {
