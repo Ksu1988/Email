@@ -61,8 +61,8 @@ namespace WorkerHrEmail
                 {
                     _logger.LogDebug($"Running DoWork iteration {_counter}");
 
-                    //Work_NewEmployees();
-                    //Work_OneYearEmployees();
+                    Work_NewEmployees();
+                    Work_OneYearEmployees();
                     Work_ComplienceEmployees();
                     Work_Report();
 
