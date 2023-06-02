@@ -146,23 +146,26 @@ namespace WorkerHrEmail.Model
             var rawItems = db.GetItems(queryString,new DbParameter[] { });
 
             var res = new List<User>();
-            foreach(var row in rawItems)
+            if (rawItems != null)
             {
-                var u = new User()
+                foreach (var row in rawItems)
                 {
-                    EmployeeId = row["Id_Pers"].ToInt32(),
-                    FirstNameRU = row["Nam"].ToString(),
-                    Mail = row["Mail"].ToString(),
-                    FirstDate = MSSQL2DT(row["firstdate"])
-                };
+                    var u = new User()
+                    {
+                        EmployeeId = row["Id_Pers"].ToInt32(),
+                        FirstNameRU = row["Nam"].ToString(),
+                        Mail = row["Mail"].ToString(),
+                        FirstDate = MSSQL2DT(row["firstdate"])
+                    };
 
-                //var patt = "dd/MM/yyyy hh:mm:ss tt";
-                //DateTime dt;
-                //if( DateTime.TryParseExact(row["FirstDate"].ToString(), patt, null, DateTimeStyles.None, out dt) )
-                //    u.FirstDate = dt;
-                res.Add(u);
+                    //var patt = "dd/MM/yyyy hh:mm:ss tt";
+                    //DateTime dt;
+                    //if( DateTime.TryParseExact(row["FirstDate"].ToString(), patt, null, DateTimeStyles.None, out dt) )
+                    //    u.FirstDate = dt;
+                    res.Add(u);
+                }
             }
-
+            
             return res;
         }
 
