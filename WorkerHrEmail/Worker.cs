@@ -5,6 +5,7 @@ using SCCBA.DB;
 using SCCBA.Extensions;
 using System;
 using System.Linq;
+using System.Net.Mail;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -61,8 +62,8 @@ namespace WorkerHrEmail
                 {
                     _logger.LogDebug($"Running DoWork iteration {_counter}");
 
-                    Work_NewEmployees();
-                    Work_OneYearEmployees();
+                    //Work_NewEmployees();
+                   // Work_OneYearEmployees();
                     Work_ComplienceEmployees();
                     //Work_Report();
 
@@ -164,29 +165,30 @@ namespace WorkerHrEmail
             using (var hr = new MSSqlConnection(cs))
             using (var conn = new MySqlConnection(MySqlServer.Main))
             {
-                //var users = conn.GetUsers(ReasonsForSelect.OneWeek);//Получаем пользователей, которые подходят под получение письма Команда по комплаенс и этике раз в неделю
+                var users = conn.GetUsers(ReasonsForSelect.OneWeek);//Получаем пользователей, которые подходят под получение письма Команда по комплаенс и этике раз в неделю
 
                // users = hr.(DbHelper.sqlForTest);
 
                 foreach (var user in users)
                 {
-                    if (!hr.WasOneWeekEmail(user))
-                    {
+                    //if (!hr.WasOneWeekEmail(user))
+                    //{
                         _logger.LogInformation($"sending email for {user.EmployeeId} ({user.Mail})");
                         //формируем письмо
                         using (var message = new EmailMessage(
                             to: "vitaliy.astakhov@stada.ru", // user.Mail,                           
                             subject: "Для новых сотрудников: полезные материалы Группы по комплаенс и этике ",
                             filename:$"{currentDirectory}\\data\\oneWeek.html",
-                            from: "noreply@stada.ru"
+                            from: "compliance@stada.ru"
                         ))
                         {
                         //отсылаем письмо
+                             message.CC.Add(new MailAddress("kseniia.chukhareva@stada.ru"));
                             _emailService.SendMessage(message);
-                            hr.UserReceivedOneWeekEmail(user); //записываем в базу данных, что пользователю письмо отправленно
+                            //hr.UserReceivedOneWeekEmail(user); //записываем в базу данных, что пользователю письмо отправленно
                         }
                         _logger.LogInformation($"email for {user.EmployeeId} ({user.Mail}) was sent");
-                    }
+                    //}
                 }
             }
             _logger.LogInformation("one week email comleted");

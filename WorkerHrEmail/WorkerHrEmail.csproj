@@ -13,10 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\SCCBA\SCCBA\SCCBA.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="data\bottom.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -29,8 +25,11 @@
     <None Update="data\linkin.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="data\oneWeek .html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="data\oneWeek.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="data\OneYear.teml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -66,5 +65,9 @@
 
   <ItemGroup>
     <Folder Include="data\sql\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\SCSBA\SCCBA\SCCBA.csproj" />
   </ItemGroup>
 </Project>
