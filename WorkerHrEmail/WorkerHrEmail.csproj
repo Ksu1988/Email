@@ -68,6 +68,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\SCСBA\SCCBA\SCCBA.csproj" />
+    <ProjectReference Include="..\..\SCCBA\SCCBA\SCCBA.csproj" />
   </ItemGroup>
 </Project>
