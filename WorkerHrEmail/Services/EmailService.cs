@@ -10,8 +10,7 @@ namespace WorkerHrEmail.Services
         {
             _config = config;
         }
-        public  void SendMessage(
-            MailMessage message)
+        public  void SendMessage(MailMessage message)
         {
             //TODO !!! две следующих строки - для тестирования !!!
             //message.To.Clear();
@@ -27,7 +26,7 @@ namespace WorkerHrEmail.Services
             int port = 0;
             int.TryParse(srtPort,out  port);
             var login = _config.GetSection("Email:Login").Value;
-            var password = _config.GetSection("Email:Passwort").Value;
+            var password = _config.GetSection("Email:Password").Value;
 #if DEBUG
             server = "smtp.mailspons.com";
             login = "59dabbc7fa914d5ba1dc";
