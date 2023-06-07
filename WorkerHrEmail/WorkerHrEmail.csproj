@@ -19,6 +19,9 @@
     <None Update="data\facebook.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="data\image001.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="data\instagram.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
