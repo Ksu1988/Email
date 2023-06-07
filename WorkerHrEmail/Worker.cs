@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using SCCBA.DB;
 using SCCBA.Extensions;
 using System;
@@ -8,7 +7,7 @@ using System.Linq;
 using System.Net.Mail;
 using System.Threading;
 using System.Threading.Tasks;
-
+using Microsoft.Extensions.Logging;
 using WorkerHrEmail.Model;
 using WorkerHrEmail.Services;
 
@@ -20,12 +19,12 @@ namespace WorkerHrEmail
         private readonly ILogger<Worker> _logger;
         private readonly IConfiguration _config;
         private readonly EmailService _emailService;
-        private static object _lock = new object();
+        private static readonly object _lock = new object();
         private int _counter = 0;
 
         private Timer _timer;
 
-        private string currentDirectory = System.AppDomain.CurrentDomain.BaseDirectory;
+        private readonly string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
         public Worker(ILogger<Worker> logger, IConfiguration configuration, EmailService emailService)
         {
@@ -161,7 +160,7 @@ namespace WorkerHrEmail
         private void Work_ComplienceEmployees()
         {
             _logger.LogInformation("compliance and ethics email start");
-            string cs = _config.GetSection("ConnectionStrings:CbaConnectionString").Value;
+            var cs = _config.GetSection("ConnectionStrings:CbaConnectionString").Value;
             using (var hr = new MSSqlConnection(cs))
             using (var conn = new MySqlConnection(MySqlServer.Main))
             {
