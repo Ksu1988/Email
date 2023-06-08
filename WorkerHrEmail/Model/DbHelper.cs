@@ -79,11 +79,12 @@ namespace WorkerHrEmail.Model
                group by main.Id_Pers, Staff_Mail.Mail, Staff_Personnel.Nam
             ) as main
             WHERE 
-	             firstdate >= DATE_ADD(CURDATE(), INTERVAL - 7 DAY)
-            AND firstdate <= DATE_ADD(CURDATE(), INTERVAL - 1 DAY)
+	             firstdate >= '2023-05-22'
+            AND firstdate <= CURDATE()
             order by 2 desc
-";      
-
+";
+        //firstdate >= DATE_ADD(CURDATE(), INTERVAL - 7 DAY)
+        //    AND firstdate <= DATE_ADD(CURDATE(), INTERVAL - 1 DAY)
         public static string sqlForTest = @"
             select * from
             (

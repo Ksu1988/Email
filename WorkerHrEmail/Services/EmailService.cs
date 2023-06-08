@@ -16,9 +16,6 @@ namespace WorkerHrEmail.Services
         }
         public  void SendMessage(MailMessage message)
         {
-            //TODO !!! две следующих строки - для тестирования !!!
-            //message.To.Clear();
-            // message.Bcc.Add(new MailAddress("kseniia.chukhareva@stada.ru"));
             if (message.From == null)
             {
                 var from =  _config.GetSection("Email:From").Value;
