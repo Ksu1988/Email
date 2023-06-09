@@ -27,8 +27,6 @@ before_script:
 
 build_job:
   stage: build
-  except:
-    - master   
   script:
     - echo "Starting SCCBA build proccess"
     - powershell -Command "New-Item -ItemType Directory -Force -Path ..\..\Common"
@@ -40,7 +38,7 @@ build_job:
     paths:
     - workeruserspy/
   tags:
-    - nn23-t
+    - nn23-p, nn23-t
     
 deploy-test:
     stage: deploy
