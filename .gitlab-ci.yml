@@ -81,7 +81,7 @@ deploy-prod:
     - echo "deploy prod"
     script: 
     - powershell -Command "Get-Date"
-    - powershell -Command "Get-Service -DisplayName '$APP_NAME' -ErrorAction Ignore | Stop-Service"
+    # - powershell -Command "Get-Service -DisplayName '$APP_NAME' -ErrorAction Ignore | Stop-Service"
     - powershell -Command "New-Item -ItemType Directory -Force -Path ..\..\Common"
     - powershell -Command "Start-Sleep -s 10"
     - powershell -Command "git clone http://gitlab.stada.ru/cba/common/sccba.git ${CI_PROJECT_DIR}/sccba"
