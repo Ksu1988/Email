@@ -34,17 +34,16 @@ build_job:
     - master   
   script:
     - echo "Starting application build proccess"
-#    - powershell -Command "New-Item -ItemType Directory -Force -Path ..\..\..\Common"
-#    - powershell -Command "New-Item -ItemType Directory -Force -Path ..\..\..\Common\SCCBA"
-#    - powershell -Command "git clone http://gitlab.stada.ru/cba/common/sccba.git"
-#    - powershell -Command "Copy-Item -Path sccba\* -Destination ..\..\..\Common\SCCBA -Recurse"
+    - powershell -Command "New-Item -ItemType Directory -Force -Path ..\..\Common"
+    - powershell -Command "New-Item -ItemType Directory -Force -Path ..\..\Common\SCCBA"
+    - powershell -Command "git clone http://gitlab.stada.ru/cba/common/sccba.git"
+    - powershell -Command "Copy-Item -Path sccba\* -Destination ..\..\Common\SCCBA -Recurse"
     - dotnet build -c Release
   artifacts:
     paths:
     - workeruserspy/
   tags:
-    - cba-q
-#     - MyTest
+    - nn23-t
     
 deploy-test:
     stage: deploy
@@ -55,7 +54,7 @@ deploy-test:
     - master  
     script: 
     - powershell -Command "Get-Date"
-    - powershell -Command "Get-Service -DisplayName '$APP_NAME' | Stop-Service"
+    - powershell -Command "Get-Service -DisplayName '$APP_NAME' -ErrorAction Ignore  | Stop-Service"
     - powershell -Command "Start-Sleep -s 10"
     - powershell -Command "Dir"
     - powershell -Command "New-Item -ItemType Directory -Force -Path $APP_DIR"
@@ -66,7 +65,7 @@ deploy-test:
     - powershell -Command "Get-Service -DisplayName '$APP_NAME' | Start-Service"
     - powershell -Command "Get-Service -DisplayName '$APP_NAME'"
     tags:
-    - cba-q
+    - nn23-t
     dependencies:
     - build_job
 #
@@ -82,12 +81,12 @@ deploy-prod:
     - echo "deploy prod"
     script: 
     - powershell -Command "Get-Date"
-    - powershell -Command "Get-Service -DisplayName '$APP_NAME' -ErrorAction Ignore| Stop-Service"
-    - powershell -Command "New-Item -ItemType Directory -Force -Path ..\..\..\Common"
+    - powershell -Command "Get-Service -DisplayName '$APP_NAME' -ErrorAction Ignore | Stop-Service"
+    - powershell -Command "New-Item -ItemType Directory -Force -Path ..\..\Common"
     - powershell -Command "Start-Sleep -s 10"
     - powershell -Command "git clone http://gitlab.stada.ru/cba/common/sccba.git ${CI_PROJECT_DIR}/sccba"
-    - powershell -Command "Remove-Item ..\..\..\common\* -Force -Recurse -ErrorAction Continue"
-    - powershell -Command "Move-Item -Path ${CI_PROJECT_DIR}/sccba -Destination ../../../Common -ErrorAction Continue -Verbose -Force"
+    - powershell -Command "Remove-Item ..\..\common\* -Force -Recurse -ErrorAction Continue"
+    - powershell -Command "Move-Item -Path ${CI_PROJECT_DIR}/sccba -Destination ../../Common -ErrorAction Continue -Verbose -Force"
     - powershell -Command "Dir"
     - powershell -Command "New-Item -ItemType Directory -Force -Path $APP_DIR"
     - powershell -Command "Remove-Item -Path '$APP_DIR\*' -Force -Verbose -Recurse"
@@ -99,4 +98,4 @@ deploy-prod:
     - powershell -Command "Get-Service -DisplayName '$APP_NAME' | Start-Service"
     - powershell -Command "Get-Service -DisplayName '$APP_NAME'"
     tags:
-    - cba-p
+    - nn23-p
