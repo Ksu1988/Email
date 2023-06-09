@@ -27,13 +27,10 @@ before_script:
 
 build_job:
   stage: build
-  only:
-     refs:
-      - TEST
   except:
     - master   
   script:
-    - echo "Starting application build proccess"
+    - echo "Starting SCCBA build proccess"
     - powershell -Command "New-Item -ItemType Directory -Force -Path ..\..\Common"
     - powershell -Command "New-Item -ItemType Directory -Force -Path ..\..\Common\SCCBA"
     - powershell -Command "git clone http://gitlab.stada.ru/cba/common/sccba.git"
@@ -84,9 +81,9 @@ deploy-prod:
     # - powershell -Command "Get-Service -DisplayName '$APP_NAME' -ErrorAction Ignore | Stop-Service"
     - powershell -Command "New-Item -ItemType Directory -Force -Path ..\..\Common"
     - powershell -Command "Start-Sleep -s 10"
-    - powershell -Command "git clone http://gitlab.stada.ru/cba/common/sccba.git ${CI_PROJECT_DIR}/sccba"
-    - powershell -Command "Remove-Item ..\..\common\* -Force -Recurse -ErrorAction Continue"
-    - powershell -Command "Move-Item -Path ${CI_PROJECT_DIR}/sccba -Destination ../../Common -ErrorAction Continue -Verbose -Force"
+    # - powershell -Command "git clone http://gitlab.stada.ru/cba/common/sccba.git ${CI_PROJECT_DIR}/sccba"
+    # - powershell -Command "Remove-Item ..\..\common\* -Force -Recurse -ErrorAction Continue"
+    # - powershell -Command "Move-Item -Path ${CI_PROJECT_DIR}/sccba -Destination ../../Common -ErrorAction Continue -Verbose -Force"
     - powershell -Command "Dir"
     - powershell -Command "New-Item -ItemType Directory -Force -Path $APP_DIR"
     - powershell -Command "Remove-Item -Path '$APP_DIR\*' -Force -Verbose -Recurse"
