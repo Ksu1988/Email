@@ -30,9 +30,9 @@ build_job:
   script:
     - echo "Starting SCCBA build proccess"
     - powershell -Command "New-Item -ItemType Directory -Force -Path ..\..\Common"
-    - powershell -Command "New-Item -ItemType Directory -Force -Path ..\..\Common\SCCBA"
-    - powershell -Command "git clone http://gitlab.stada.ru/cba/common/sccba.git"
-    - powershell -Command "Copy-Item -Path sccba\* -Destination ..\..\Common\SCCBA -Recurse"
+    # - powershell -Command "New-Item -ItemType Directory -Force -Path ..\..\Common\SCCBA"
+    - powershell -Command "git clone http://gitlab.stada.ru/cba/common/sccba.git SCCBA"
+    - powershell -Command "Copy-Item -Path SCCBA\* -Destination ..\..\Common\SCCBA -Recurse"
     - dotnet build -c Release
   artifacts:
     paths:
@@ -51,8 +51,8 @@ deploy-prod:
     script: 
     - powershell -Command "Get-Date"
     # - powershell -Command "Get-Service -DisplayName '$APP_NAME' -ErrorAction Ignore | Stop-Service"
-    - powershell -Command "New-Item -ItemType Directory -Force -Path ..\..\Common"
-    - powershell -Command "Start-Sleep -s 10"
+    # - powershell -Command "New-Item -ItemType Directory -Force -Path ..\..\Common"
+    # - powershell -Command "Start-Sleep -s 10"
     # - powershell -Command "git clone http://gitlab.stada.ru/cba/common/sccba.git ${CI_PROJECT_DIR}/sccba"
     # - powershell -Command "Remove-Item ..\..\common\* -Force -Recurse -ErrorAction Continue"
     # - powershell -Command "Move-Item -Path ${CI_PROJECT_DIR}/sccba -Destination ../../Common -ErrorAction Continue -Verbose -Force"
