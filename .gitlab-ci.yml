@@ -29,10 +29,11 @@ build_job:
   stage: build
   script:
     - echo "Starting SCCBA build proccess"
-    - powershell -Command "New-Item -ItemType Directory -Force -Path ..\..\Common"
+    #- powershell -Command "New-Item -ItemType Directory -Force -Path ..\..\Common"
     # - powershell -Command "New-Item -ItemType Directory -Force -Path ..\..\Common\SCCBA"
-    - powershell -Command "git clone http://gitlab.stada.ru/cba/common/sccba.git SCCBA"
-    # - powershell -Command "Copy-Item -Path SCCBA\* -Destination ..\..\Common\SCCBA -Recurse"
+    - powershell -Command "git clone http://gitlab.stada.ru/cba/common/sccba.git ${CI_PROJECT_DIR}/sccba"
+    - powershell -Command "Remove-Item ..\..\COMMON\* -Force -Recurse -ErrorAction Continue"
+    - powershell -Command "Move-Item -Path ${CI_PROJECT_DIR}/sccba -Destination ../../Common -ErrorAction Continue -Verbose -Force"
     - dotnet build -c Release
   artifacts:
     paths:
