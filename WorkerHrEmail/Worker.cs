@@ -164,7 +164,7 @@ namespace WorkerHrEmail
             using (var hr = new MSSqlConnection(cs))
             using (var conn = new MySqlConnection(MySqlServer.Main))
             {
-                var users = conn.GetUsers(ReasonsForSelect.OneWeek);//Получаем пользователей, которые подходят под получение письма Команда по комплаенс и этике раз в неделю
+                var users = conn.GetUsers(ReasonsForSelect.OneWeek).Where(e => !string.IsNullOrEmpty(e.Mail));//Получаем пользователей, которые подходят под получение письма Команда по комплаенс и этике раз в неделю
 
                 foreach (var user in users)
                 {
