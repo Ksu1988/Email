@@ -35,9 +35,6 @@ build_job:
     - powershell -Command "Remove-Item ..\..\COMMON\* -Force -Recurse -ErrorAction Continue"
     - powershell -Command "Move-Item -Path ${CI_PROJECT_DIR}/sccba -Destination ../../Common -ErrorAction Continue -Verbose -Force"
     - dotnet build -c Release
-  artifacts:
-    paths:
-    - workeruserspy/
   tags:
     - nn23-p
     
