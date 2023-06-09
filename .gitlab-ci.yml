@@ -32,7 +32,7 @@ build_job:
     - powershell -Command "New-Item -ItemType Directory -Force -Path ..\..\Common"
     # - powershell -Command "New-Item -ItemType Directory -Force -Path ..\..\Common\SCCBA"
     - powershell -Command "git clone http://gitlab.stada.ru/cba/common/sccba.git SCCBA"
-    - powershell -Command "Copy-Item -Path SCCBA\* -Destination ..\..\Common\SCCBA -Recurse"
+    # - powershell -Command "Copy-Item -Path SCCBA\* -Destination ..\..\Common\SCCBA -Recurse"
     - dotnet build -c Release
   artifacts:
     paths:
