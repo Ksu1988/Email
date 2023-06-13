@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using SCCBA.DB;
 using SCCBA.Extensions;
 using System;
@@ -8,6 +7,7 @@ using System.Linq;
 using System.Net.Mail;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using WorkerHrEmail.Model;
 using WorkerHrEmail.Services;
 
@@ -59,16 +59,16 @@ namespace WorkerHrEmail
             {
                 try
                 {
-                    _logger.LogDebug($"Running DoWork iteration {_counter}");
+                    _logger.LogInformation($"Running DoWork iteration {_counter}");
 
-                    //Work_NewEmployees();
-                    //Work_OneYearEmployees();
+                    Work_NewEmployees();
+                    Work_OneYearEmployees();
                     Work_ComplienceEmployees();
-                    //Work_Report();
+                    Work_Report();
 
-                    _logger.LogDebug($"DoWork {_counter} finished, will start iteration {_counter + 1}");
+                    _logger.LogInformation($"DoWork {_counter} finished, will start iteration {_counter + 1}");
                 }
-
+                
                 catch (Exception e)
                 {
                     _logger.LogCritical($"{e.Message}\r\n{e.StackTrace}");
@@ -169,7 +169,7 @@ namespace WorkerHrEmail
                 _logger.LogError(e.Message);
             }
         }
-
+        
 
         private void Work_ComplienceEmployees()
         {
