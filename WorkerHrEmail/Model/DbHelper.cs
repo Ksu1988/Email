@@ -24,7 +24,8 @@ namespace WorkerHrEmail.Model
 						    INNER JOIN Staff_Profession ON (Staff_Profession.Id_ProfUniq = main.Id_ProfUniq)
 					    where 
 						    Staff_Mail.Mail is not null 
-						    AND main.DateOUT > CURDATE()
+                            AND Staff_Mail.Mail <> ''
+                            AND main.DateOUT > CURDATE()
 						    AND Staff_Profession.Id_Cat <> 0
 						    AND main.Id_Status = 1
 					    group by main.Id_Pers, Staff_Mail.Mail, Staff_Personnel.Nam
@@ -47,7 +48,7 @@ namespace WorkerHrEmail.Model
 		            INNER JOIN Staff_Mail ON (Staff_Mail.Id_Pers = main.Id_Pers)						
 		            INNER JOIN Staff_Profession ON (Staff_Profession.Id_ProfUniq = main.Id_ProfUniq)
                where 
-                  Staff_Mail.Mail is not NULL 
+                    Staff_Mail.Mail is not NULL 
 		            AND main.DateOUT > CURDATE()
 		            AND Staff_Profession.Id_Cat <> 0
 		            AND main.Id_Status = 1
@@ -72,19 +73,15 @@ namespace WorkerHrEmail.Model
 		            INNER JOIN Staff_Mail ON (Staff_Mail.Id_Pers = main.Id_Pers)						
 		            INNER JOIN Staff_Profession ON (Staff_Profession.Id_ProfUniq = main.Id_ProfUniq)
                where 
-                  Staff_Mail.Mail is not NULL 
-		            AND main.DateOUT > CURDATE()
+                    main.DateOUT > CURDATE()
 		            AND Staff_Profession.Id_Cat <> 0
 		            AND main.Id_Status = 1
                group by main.Id_Pers, Staff_Mail.Mail, Staff_Personnel.Nam
             ) as main
-            WHERE 
-	             firstdate >= '2023-05-22'
-            AND firstdate <= CURDATE()
-            order by 2 desc
-";
-        //firstdate >= DATE_ADD(CURDATE(), INTERVAL - 7 DAY)
-        //    AND firstdate <= DATE_ADD(CURDATE(), INTERVAL - 1 DAY)
+            WHERE
+              firstdate >= DATE_ADD(CURDATE(), INTERVAL - 6 DAY)
+              AND firstdate <= CURDATE()        
+              order by 2 desc";      
         public static string sqlForTest = @"
             select * from
             (
@@ -333,7 +330,7 @@ namespace WorkerHrEmail.Model
                     new DbParameter[] {
                         new SqlParameter("@EmployeeId", user.EmployeeId),
                         new SqlParameter("@dt", DateTime.Now)
-                    }); //ставим заодно и wellcome ибо проработал год, всяко должен был получить
+                    }); 
             }
             else
             {
