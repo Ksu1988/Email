@@ -39,7 +39,6 @@ namespace WorkerHrEmail.Services
             catch (Exception e)
             {
                 _logger.LogError(e.Message);
-                throw new Exception(e.Message, e);
             }
             
         }

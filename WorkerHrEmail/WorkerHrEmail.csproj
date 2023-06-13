@@ -76,6 +76,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\SCCBA\SCCBA\SCCBA.csproj" />
+    <ProjectReference Include="..\..\..\COMMON\SCCBA\SCCBA\SCCBA.csproj" />
   </ItemGroup>
 </Project>
