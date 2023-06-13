@@ -59,14 +59,14 @@ namespace WorkerHrEmail
             {
                 try
                 {
-                    _logger.LogDebug($"Running DoWork iteration {_counter}");
+                    _logger.LogInformation($"Running DoWork iteration {_counter}");
 
                     Work_NewEmployees();
                     Work_OneYearEmployees();
                     Work_ComplienceEmployees();
                     Work_Report();
 
-                    _logger.LogDebug($"DoWork {_counter} finished, will start iteration {_counter + 1}");
+                    _logger.LogInformation($"DoWork {_counter} finished, will start iteration {_counter + 1}");
                 }
                 
                 catch (Exception e)
