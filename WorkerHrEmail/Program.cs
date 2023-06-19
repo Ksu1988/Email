@@ -15,7 +15,7 @@ namespace WorkerHrEmail
         private static Logger _serilogLogger;
 
         private static IConfiguration Configuration { get; } = new ConfigurationBuilder()
-            .SetBasePath(Assembly.GetEntryAssembly().Location)
+            .SetBasePath(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location))
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .Build();
 
