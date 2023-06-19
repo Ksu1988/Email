@@ -26,6 +26,7 @@ namespace WorkerHrEmail
                     logging.SetMinimumLevel(LogLevel.Debug);
 
                     IConfiguration config = new ConfigurationBuilder()
+                        .SetBasePath(Directory.GetCurrentDirectory()) 
                         .AddJsonFile("appsettings.json")
                         .Build();
                     string name = config.GetSection("Name").Value;
