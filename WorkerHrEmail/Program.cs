@@ -28,6 +28,7 @@ namespace WorkerHrEmail
                 .CreateLogger();
             try
             {
+                _serilogLogger.Information(Directory.GetCurrentDirectory());
                 _serilogLogger.Information("Starting HR email service");
                 CreateHostBuilder(args).Build().Run();
             }
