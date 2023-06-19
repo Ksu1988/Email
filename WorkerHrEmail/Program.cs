@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Serilog;
 using Serilog.Core;
 using WorkerHrEmail.Services;
+using System.Reflection;
 
 namespace WorkerHrEmail
 {
@@ -14,7 +15,7 @@ namespace WorkerHrEmail
         private static Logger _serilogLogger;
 
         private static IConfiguration Configuration { get; } = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
+            .SetBasePath(Assembly.GetEntryAssembly().Location)
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .Build();
 
@@ -28,7 +29,7 @@ namespace WorkerHrEmail
                 .CreateLogger();
             try
             {
-                _serilogLogger.Information(Directory.GetCurrentDirectory());
+                _serilogLogger.Information(Assembly.GetEntryAssembly().Location);
                 _serilogLogger.Information("Starting HR email service");
                 CreateHostBuilder(args).Build().Run();
             }
