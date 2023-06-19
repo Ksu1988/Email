@@ -10,12 +10,12 @@ namespace WorkerHrEmail.Services
 {
     public class EmailMessage: MailMessage
     {
-        private string currentDirectory = System.AppDomain.CurrentDomain.BaseDirectory;
+        private string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
         public Dictionary<string, string> _data = new Dictionary<string, string>();
         public Dictionary<string, string> Data => _data;
 
-        public EmailMessage(string to, string subject, string filename, params Tuple<string, string>[] data) 
-            : base("noreply@stada.ru", to, subject, "")
+        public EmailMessage(string to, string subject, string filename, string from = null, params Tuple<string, string>[] data ) 
+            : base(from, to, subject, "")
         {
             IsBodyHtml = true;
             BodyEncoding = Encoding.GetEncoding("UTF-8");

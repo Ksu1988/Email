@@ -1,0 +1,8 @@
+
+USE [HR]
+GO
+
+ALTER TABLE [dbo].[UserReceivedEmail]
+ADD [OneWeekEmail] [datetime] NULL;
+
+GO;
