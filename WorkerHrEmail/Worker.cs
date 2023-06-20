@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using SCCBA.DB;
 using SCCBA.Extensions;
 using System;
@@ -7,7 +8,6 @@ using System.Linq;
 using System.Net.Mail;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using WorkerHrEmail.Model;
 using WorkerHrEmail.Services;
 
@@ -16,10 +16,10 @@ namespace WorkerHrEmail
 
     public class Worker : IHostedService, IDisposable
     {
-        private readonly ILogger<Worker> _logger;
+        private ILogger<Worker> _logger; // = Log.Logger.ForContext<Worker>();
         private readonly IConfiguration _config;
         private readonly EmailService _emailService;
-        private static readonly object _lock = new object();
+        private static readonly object _lock = new();
         private int _counter = 0;
 
         private Timer _timer;
@@ -59,19 +59,19 @@ namespace WorkerHrEmail
             {
                 try
                 {
-                    _logger.LogInformation($"Running DoWork iteration {_counter}");
+                    _logger.LogInformation("Running DoWork iteration {Counter}", _counter);
 
                     Work_NewEmployees();
                     Work_OneYearEmployees();
                     Work_ComplienceEmployees();
                     Work_Report();
 
-                    _logger.LogInformation($"DoWork {_counter} finished, will start iteration {_counter + 1}");
+                    _logger.LogInformation("DoWork {CorrentCount} finished, will start iteration {NextCount}", _counter, (_counter + 1));
                 }
                 
                 catch (Exception e)
                 {
-                    _logger.LogCritical($"{e.Message}\r\n{e.StackTrace}");
+                    _logger.LogCritical("{Message}\r\n{StackTrace}", e.Message, e.StackTrace);
                 }
                 finally
                 {
@@ -83,8 +83,9 @@ namespace WorkerHrEmail
 
         private void Work_NewEmployees()
         {
-            _logger.LogInformation("wellcome emails start");
+            _logger.LogInformation("{Method} wellcome emails start", nameof(Work_NewEmployees));
             string cs = _config.GetSection("ConnectionStrings:CbaConnectionString").Value; // я вот это раскоментировал так как ниже была ошибка из-за cs
+            string emailFrom = _config.GetSection("Email:From").Value;
             using (var hr = new MSSqlConnection(cs))
             using (var conn = new MySqlConnection(MySqlServer.Main))
             {
@@ -96,13 +97,13 @@ namespace WorkerHrEmail
                 {
                     if (!hr.WasWellcomeEmail(user)) //этому работнику еще не отсылали
                     {
-                        _logger.LogInformation($"sending email for {user.EmployeeId} ({user.Mail})");
+                        _logger.LogInformation("try sending email for {EmployeeId} ({Mail})", user.EmployeeId, user.Mail);
                         //формируем письмо
                         using (var message = new EmailMessage(
                             to: user.Mail,
                             subject: "Добро пожаловать в STADA!",
                             filename: $"{currentDirectory}\\data\\wellcome.teml",
-                            null,
+                            from: emailFrom,
                             Tuple.Create("Name", user.FirstNameRU) //добавляем имя
                         ))
                         {
@@ -110,7 +111,7 @@ namespace WorkerHrEmail
                             _emailService.SendMessage(message);
                             hr.UserReceivedWellcomeEmail(user); //записываем в базу данных, что пользователю письмо отправленно
                         }
-                        _logger.LogInformation($"email for {user.EmployeeId} ({user.Mail}) was sent");
+                        _logger.LogInformation("email for {EmployeeId} ({Mail}) was sent", user.EmployeeId, user.Mail);
                     }
                 }
             }
@@ -121,6 +122,7 @@ namespace WorkerHrEmail
         {
             _logger.LogInformation("one year email start");
             string cs = _config.GetSection("ConnectionStrings:CbaConnectionString").Value;
+            string emailFrom = _config.GetSection("Email:From").Value;
             using (var hr = new MSSqlConnection(cs))
             using (var conn = new MySqlConnection(MySqlServer.Main))
             {
@@ -142,14 +144,15 @@ namespace WorkerHrEmail
                         using (var message = new EmailMessage(
                             to: user.Mail,
                             subject: "Поздравляем с годом работы в STADA!",                            
-                            filename:$"{currentDirectory}\\data\\oneyear.teml"
+                            filename: $"{currentDirectory}\\data\\oneyear.teml",
+                            from: emailFrom
                         ))
                         {
                             //отсылаем письмо
                             _emailService.SendMessage(message);
                             hr.UserReceivedOneYearEmail(user); //записываем в базу данных, что пользователю письмо отправленно
                         }
-                        _logger.LogInformation($"email for {user.EmployeeId} ({user.Mail}) was sent");
+                        _logger.LogInformation("email for {EmployeeId} ({Mail}) was sent", user.EmployeeId, user.Mail);
                     }
                 }
             }
@@ -161,6 +164,8 @@ namespace WorkerHrEmail
         {
             _logger.LogInformation("compliance and ethics email start");
             var cs = _config.GetSection("ConnectionStrings:CbaConnectionString").Value;
+            string emailFrom = _config.GetSection("Email:From").Value;
+
             using (var hr = new MSSqlConnection(cs))
             using (var conn = new MySqlConnection(MySqlServer.Main))
             {
@@ -170,7 +175,7 @@ namespace WorkerHrEmail
                 {
                     if (!hr.WasOneWeekEmail(user))
                     {
-                        _logger.LogInformation($"sending email for {user.EmployeeId} ({user.Mail})");
+                        _logger.LogInformation("try sending email for {EmployeeId} ({Mail})", user.EmployeeId, user.Mail);
                         //формируем письмо
                         using (var message = new EmailMessage(
                             to:  user.Mail,                           
@@ -186,7 +191,7 @@ namespace WorkerHrEmail
                             _emailService.SendMessage(message);
                             hr.UserReceivedOneWeekEmail(user); //записываем в базу данных, что пользователю письмо отправленно
                         }
-                        _logger.LogInformation($"email for {user.EmployeeId} ({user.Mail}) was sent");
+                        _logger.LogInformation("email for {EmployeeId} ({Mail}) was sent", user.EmployeeId, user.Mail);
                     }
                 }
             }
@@ -202,6 +207,8 @@ namespace WorkerHrEmail
             _logger.LogInformation("report start");
 
             string cs = _config.GetSection("ConnectionStrings:CbaConnectionString").Value;
+            string emailFrom = _config.GetSection("Email:From").Value;
+
             using (var conn = new MSSqlConnection(cs))
             {
                 var history = conn.GetHistory();//Получаем историю отправки писем, которые еще не оформляли в отчет
