@@ -6,7 +6,7 @@ variables:
   APP_DIR: 'c:\_WORKERS\WorkerHrEmail'
 
 
-image: mcr.microsoft.com/dotnet/core/sdk:3.1
+image: mcr.microsoft.com/dotnet/core/sdk:6
 
 before_script:
   - echo "start $APP_NAME $APP_DIR"
@@ -37,4 +37,4 @@ deploy-prod:
     - powershell -Command "Get-Service -DisplayName '$APP_NAME' | Start-Service"
     - powershell -Command "Get-Service -DisplayName '$APP_NAME'"
     tags:
-    - cba-p
+    - nn23-p
