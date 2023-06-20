@@ -68,7 +68,7 @@ namespace WorkerHrEmail
 
                     _logger.LogInformation("DoWork {CorrentCount} finished, will start iteration {NextCount}", _counter, (_counter + 1));
                 }
-                
+
                 catch (Exception e)
                 {
                     _logger.LogCritical("{Message}\r\n{StackTrace}", e.Message, e.StackTrace);
@@ -83,119 +83,141 @@ namespace WorkerHrEmail
 
         private void Work_NewEmployees()
         {
-            _logger.LogInformation("{Method} wellcome emails start", nameof(Work_NewEmployees));
-            string cs = _config.GetSection("ConnectionStrings:CbaConnectionString").Value; // я вот это раскоментировал так как ниже была ошибка из-за cs
-            string emailFrom = _config.GetSection("Email:From").Value;
-            using (var hr = new MSSqlConnection(cs))
-            using (var conn = new MySqlConnection(MySqlServer.Main))
+            try
             {
-                var users = conn.GetUsers(ReasonsForSelect.Wellcome);//Получаем пользователей, которые подходят под получение wellcome письма
-
-                //users = conn.GetUsers(ReasonsForSelect.test);
-
-                foreach (var user in users)
+                _logger.LogInformation("{Method} wellcome emails start", nameof(Work_NewEmployees));
+                string cs = _config.GetSection("ConnectionStrings:CbaConnectionString").Value; // я вот это раскоментировал так как ниже была ошибка из-за cs
+                string emailFrom = _config.GetSection("Email:From").Value;
+                using (var hr = new MSSqlConnection(cs))
+                using (var conn = new MySqlConnection(MySqlServer.Main))
                 {
-                    if (!hr.WasWellcomeEmail(user)) //этому работнику еще не отсылали
+                    var users = conn.GetUsers(ReasonsForSelect.Wellcome);//Получаем пользователей, которые подходят под получение wellcome письма
+
+                    //users = conn.GetUsers(ReasonsForSelect.test);
+
+                    foreach (var user in users)
                     {
-                        _logger.LogInformation("try sending email for {EmployeeId} ({Mail})", user.EmployeeId, user.Mail);
-                        //формируем письмо
-                        using (var message = new EmailMessage(
-                            to: user.Mail,
-                            subject: "Добро пожаловать в STADA!",
-                            filename: $"{currentDirectory}\\data\\wellcome.teml",
-                            from: emailFrom,
-                            Tuple.Create("Name", user.FirstNameRU) //добавляем имя
-                        ))
+                        if (!hr.WasWellcomeEmail(user)) //этому работнику еще не отсылали
                         {
-                            //отсылаем письмо
-                            _emailService.SendMessage(message);
-                            hr.UserReceivedWellcomeEmail(user); //записываем в базу данных, что пользователю письмо отправленно
+                            _logger.LogInformation("try sending email for {EmployeeId} ({Mail})", user.EmployeeId, user.Mail);
+                            //формируем письмо
+                            using (var message = new EmailMessage(
+                                to: user.Mail,
+                                subject: "Добро пожаловать в STADA!",
+                                filename: $"{currentDirectory}\\data\\wellcome.teml",
+                                from: emailFrom,
+                                Tuple.Create("Name", user.FirstNameRU) //добавляем имя
+                            ))
+                            {
+                                //отсылаем письмо
+                                _emailService.SendMessage(message);
+                                hr.UserReceivedWellcomeEmail(user); //записываем в базу данных, что пользователю письмо отправленно
+                            }
+                            _logger.LogInformation("email for {EmployeeId} ({Mail}) was sent", user.EmployeeId, user.Mail);
                         }
-                        _logger.LogInformation("email for {EmployeeId} ({Mail}) was sent", user.EmployeeId, user.Mail);
                     }
                 }
+                _logger.LogInformation("wellcome emails comleted");
             }
-            _logger.LogInformation("wellcome emails comleted");
+            catch (Exception ex)
+            {
+                _logger.LogError("welcome emails not sent", ex.Message, ex);
+            }
         }
 
         private void Work_OneYearEmployees()
         {
-            _logger.LogInformation("one year email start");
-            string cs = _config.GetSection("ConnectionStrings:CbaConnectionString").Value;
-            string emailFrom = _config.GetSection("Email:From").Value;
-            using (var hr = new MSSqlConnection(cs))
-            using (var conn = new MySqlConnection(MySqlServer.Main))
+            try
             {
-                var users = conn.GetUsers(ReasonsForSelect.OneYear);//Получаем пользователей, которые подходят под получение wellcome письма
-
-                //users = conn.GetUsers(ReasonsForSelect.test);
-
-                foreach (var user in users)
+                _logger.LogInformation("one year email start");
+                string cs = _config.GetSection("ConnectionStrings:CbaConnectionString").Value;
+                string emailFrom = _config.GetSection("Email:From").Value;
+                using (var hr = new MSSqlConnection(cs))
+                using (var conn = new MySqlConnection(MySqlServer.Main))
                 {
-                    if (!hr.WasOneYearEmail(user) //этому работнику еще не отсылали
-                        //дополнительные проверки, что именно год назад
-                        && user.FirstDate.Value.Year == DateTime.Now.Year - 1
-                        && user.FirstDate.Value.Month == DateTime.Now.Month
-                        && user.FirstDate.Value.Day == DateTime.Now.Day
-                    )
+                    var users = conn.GetUsers(ReasonsForSelect.OneYear);//Получаем пользователей, которые подходят под получение wellcome письма
+
+                    //users = conn.GetUsers(ReasonsForSelect.test);
+
+                    foreach (var user in users)
                     {
-                        _logger.LogInformation($"sending email for {user.EmployeeId} ({user.Mail})");
-                        //формируем письмо
-                        using (var message = new EmailMessage(
-                            to: user.Mail,
-                            subject: "Поздравляем с годом работы в STADA!",                            
-                            filename: $"{currentDirectory}\\data\\oneyear.teml",
-                            from: emailFrom
-                        ))
+                        if (!hr.WasOneYearEmail(user) //этому работнику еще не отсылали
+                                                      //дополнительные проверки, что именно год назад
+                            && user.FirstDate.Value.Year == DateTime.Now.Year - 1
+                            && user.FirstDate.Value.Month == DateTime.Now.Month
+                            && user.FirstDate.Value.Day == DateTime.Now.Day
+                        )
                         {
-                            //отсылаем письмо
-                            _emailService.SendMessage(message);
-                            hr.UserReceivedOneYearEmail(user); //записываем в базу данных, что пользователю письмо отправленно
+                            _logger.LogInformation($"sending email for {user.EmployeeId} ({user.Mail})");
+                            //формируем письмо
+                            using (var message = new EmailMessage(
+                                to: user.Mail,
+                                subject: "Поздравляем с годом работы в STADA!",
+                                filename: $"{currentDirectory}\\data\\oneyear.teml",
+                                from: emailFrom
+                            ))
+                            {
+                                //отсылаем письмо
+                                _emailService.SendMessage(message);
+                                hr.UserReceivedOneYearEmail(user); //записываем в базу данных, что пользователю письмо отправленно
+                            }
+                            _logger.LogInformation("email for {EmployeeId} ({Mail}) was sent", user.EmployeeId, user.Mail);
                         }
-                        _logger.LogInformation("email for {EmployeeId} ({Mail}) was sent", user.EmployeeId, user.Mail);
                     }
                 }
+                _logger.LogInformation("one year email completed");
+            }            
+            catch (Exception ex)
+            {
+                _logger.LogError("one year emails not sent", ex.Message, ex);
             }
-            _logger.LogInformation("one year email completed");
-        }
+}
         
 
         private void Work_ComplienceEmployees()
         {
-            _logger.LogInformation("compliance and ethics email start");
-            var cs = _config.GetSection("ConnectionStrings:CbaConnectionString").Value;
-            string emailFrom = _config.GetSection("Email:From").Value;
-
-            using (var hr = new MSSqlConnection(cs))
-            using (var conn = new MySqlConnection(MySqlServer.Main))
+            try
             {
-                var users = conn.GetUsers(ReasonsForSelect.OneWeek).Where(e => !string.IsNullOrEmpty(e.Mail));//Получаем пользователей, которые подходят под получение письма Команда по комплаенс и этике раз в неделю
+                _logger.LogInformation("compliance and ethics email start");
+                var cs = _config.GetSection("ConnectionStrings:CbaConnectionString").Value;
+                string emailFrom = _config.GetSection("Email:From").Value;
 
-                foreach (var user in users)
+                using (var hr = new MSSqlConnection(cs))
+                using (var conn = new MySqlConnection(MySqlServer.Main))
                 {
-                    if (!hr.WasOneWeekEmail(user))
+                    var users = conn.GetUsers(ReasonsForSelect.OneWeek).Where(e => !string.IsNullOrEmpty(e.Mail));//Получаем пользователей, которые подходят под получение письма Команда по комплаенс и этике раз в неделю
+                    var message = new EmailMessage(
+                                                    to: "kseniia.@stada.ru",
+                                                    subject: "Для новых сотрудников: полезные материалы Группы по комплаенс и этике ",
+                                                    filename: $"{currentDirectory}\\data\\oneWeek.html",
+                                                    from: "compliance@stada.ru"
+                                                );
+                    foreach (var user in users)
                     {
-                        _logger.LogInformation("try sending email for {EmployeeId} ({Mail})", user.EmployeeId, user.Mail);
-                        //формируем письмо
-                        using (var message = new EmailMessage(
-                            to:  user.Mail,                           
-                            subject: "Для новых сотрудников: полезные материалы Группы по комплаенс и этике ",
-                            filename:$"{currentDirectory}\\data\\oneWeek.html",
-                            from: "compliance@stada.ru"
-                        ))
+                        if (!hr.WasOneWeekEmail(user))
                         {
-                        //отсылаем письмо
-                            message.CC.Add(new MailAddress("kseniia.chukhareva@stada.ru"));
-                            message.CC.Add(new MailAddress("ekaterina.sarandaeva@stada.ru"));
-                            message.CC.Add(new MailAddress("julia.zhuga@stada.ru"));
-                            _emailService.SendMessage(message);
-                            hr.UserReceivedOneWeekEmail(user); //записываем в базу данных, что пользователю письмо отправленно
+                            _logger.LogInformation("try sending email for {EmployeeId} ({Mail})", user.EmployeeId, user.Mail);
+                            message.To.Add(user.Mail);
                         }
-                        _logger.LogInformation("email for {EmployeeId} ({Mail}) was sent", user.EmployeeId, user.Mail);
+                    }
+                    //отсылаем письмо               
+                    message.CC.Add(new MailAddress("ekaterina.sarandaeva@stada.ru"));
+                    message.CC.Add(new MailAddress("julia.zhuga@stada.ru"));
+                    _emailService.SendMessage(message);
+
+                    foreach (var user in users)
+                    {
+                        hr.UserReceivedOneWeekEmail(user);
+                        _logger.LogInformation($"email for {user.EmployeeId} ({user.Mail}) was sent");//записываем в базу данных, что пользователю письмо отправленно
                     }
                 }
+
+                _logger.LogInformation("compliance and ethics email comleted");
             }
-            _logger.LogInformation("one week email comleted");
+            catch (Exception e)
+            {
+                _logger.LogError("compliance and ethics email not send", e.Message);
+            }
         }
 
 

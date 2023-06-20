@@ -14,7 +14,7 @@ namespace WorkerHrEmail.Services
             _logger = logger;
             _config = config;
         }
-        public  void SendMessage(MailMessage message)
+        public void SendMessage(MailMessage message)
         {
             try
             {
@@ -31,16 +31,19 @@ namespace WorkerHrEmail.Services
                 var login = _config.GetSection("Email:Login").Value;
                 var password = _config.GetSection("Email:Password").Value;
                 _logger.LogDebug($"{server}, {login}, {password}, {message.From}");
-                using var mailClient = new SmtpClient(server, port == 0 ? defaultport : port);
-                // mailClient.Credentials = new System.Net.NetworkCredential(login, password);
 
-                mailClient.Send(message);
+                using (var mailClient = new SmtpClient(server, port == 0 ? defaultport : port))
+                {
+                    mailClient.Credentials = new System.Net.NetworkCredential(login, password);
+                    mailClient.Send(message);
+                };
             }
             catch (Exception e)
             {
                 _logger.LogError(e.Message);
+                throw new Exception(e.Message, e);
             }
-            
+
         }
     }
 }
