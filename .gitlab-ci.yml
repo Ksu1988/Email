@@ -21,15 +21,15 @@ stages:
     - powershell ci/restart-service.ps1 $APP_NAME
   when: manual
 
-build:
-  extends: .build
-  tags:
-    - nn23-t
-  variables:
-      CONFIGURATION_NAME: Debug
-  except:
-    - PROD
-    - TEST
+# build:
+#   extends: .build
+#   tags:
+#     - nn23-t
+#   variables:
+#       CONFIGURATION_NAME: Debug
+#   except:
+#     - PROD
+#     - TEST
    
 build-test:
   extends: .build
