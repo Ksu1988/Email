@@ -31,7 +31,7 @@ build:
     - PROD
     - TEST
    
-build:
+build-test:
   extends: .build
   tags:
     - nn23-t
