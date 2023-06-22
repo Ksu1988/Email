@@ -68,7 +68,7 @@ deploy-prod:
     - PROD
 
 restart service:
-  extends: restart service
+  extends: .restart service
   tags:
     - nn23-p
   variables:
