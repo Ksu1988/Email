@@ -5,7 +5,7 @@ function StopService([string] $ApplicationName){
 	CheckIsNullOrEmptyString -Value $ApplicationName -ArgName 'ApplicationName'
 
 	Write-Host "Stop $ApplicationName service"
-	$stopCommand = "Get-Service -$ApplicationName -ErrorAction Ignore | Stop-Service"
+	$stopCommand = "Get-Service $ApplicationName -ErrorAction Ignore | Stop-Service"
 	$tryStatus = TryManyWithTimeout -Command $stopCommand -Attempts 3
 	if( -not $tryStatus ){
 		throw 'Stop service failed';
