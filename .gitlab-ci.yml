@@ -52,7 +52,7 @@ deploy-test:
   tags:
     - nn23-t
   variables:
-    CONFIGURATION_NAME: Staging
+    CONFIGURATION_NAME: Debug
     ENVIRONMENT_NAME: Staging
   only:
     - TEST
@@ -62,7 +62,7 @@ deploy-prod:
   tags:
     - nn23-p
   variables:
-    CONFIGURATION_NAME: Production
+    CONFIGURATION_NAME: Release
     ENVIRONMENT_NAME: Production
   only:
     - master
