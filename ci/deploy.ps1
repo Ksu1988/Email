@@ -1,21 +1,6 @@
 $ScriptDir = Split-Path -parent $MyInvocation.MyCommand.Path
 Import-Module $ScriptDir\functions.psm1
 
-function EchoEnv() {
-    echo "Running on $([Environment]::MachineName)..."
-    echo ${CI_BUILDS_DIR}
-    echo ${CI_JOB_NAME}
-    echo ${CI_PROJECT_DIR}
-    echo ${CI_PROJECT_PATH}
-    echo ${CI_PROJECT_NAME}
-    echo ${CI_RUNNER_ID}
-    echo ${CI_RUNNER_TAGS}
-    echo ${CI_RUNNER_DESCRIPTION}
-    echo ${CI_CONCURRENT_ID}
-    Write-Host "========="
-    Write-Host "$CI_PROJECT_DIR"
-}
-
 function StopService([string] $ApplicationName){
 	CheckIsNullOrEmptyString -Value $ApplicationName -ArgName 'ApplicationName'
 
@@ -70,4 +55,8 @@ function StartService([string] $ApplicationName){
 # BuildLib
 # Deploy -SourceFolder $SourceFolder -DestinationFolder $DestinationFolder
 # StartPool -ApplicationPoolName $ApplicationPoolName
-EchoEnv
+Write-Host "Running on $(Environment::MachineName ..."
+Write-Host $CI_BUILDS_DIR
+Write-Host $CI_JOB_NAME
+Write-Host $CI_PROJECT_DIR
+Write-Host $CI_PROJECT_PATH
