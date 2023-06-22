@@ -55,8 +55,8 @@ function StartService([string] $ApplicationName){
 # BuildLib
 # Deploy -SourceFolder $SourceFolder -DestinationFolder $DestinationFolder
 # StartPool -ApplicationPoolName $ApplicationPoolName
-Write-Host "Running on $Environment::MachineName ..."
-Write-Host $CI_BUILDS_DIR
-Write-Host $CI_JOB_NAME
-Write-Host $CI_PROJECT_DIR
-Write-Host $CI_PROJECT_PATH
+Write-Host "Running on $Environment:MachineName ..."
+Write-Host "CI_BUILDS_DIR -  $CI_BUILDS_DIR"
+Write-Host "CI_JOB_NAME - $CI_JOB_NAME"
+Write-Host "CI_PROJECT_DIR - $CI_PROJECT_DIR"
+Write-Host "CI_PROJECT_PATH - $CI_PROJECT_PATH"
