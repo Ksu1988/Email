@@ -187,7 +187,7 @@ namespace WorkerHrEmail
                 {
                     var users = conn.GetUsers(ReasonsForSelect.OneWeek).Where(e => !string.IsNullOrEmpty(e.Mail));//Получаем пользователей, которые подходят под получение письма Команда по комплаенс и этике раз в неделю
                     var message = new EmailMessage(
-                                                    to: "kseniia.@stada.ru",
+                                                    to: _config.GetSection("Email:ForReport").Value,
                                                     subject: "Для новых сотрудников: полезные материалы Группы по комплаенс и этике ",
                                                     filename: $"{currentDirectory}\\data\\oneWeek.html",
                                                     from: "compliance@stada.ru"
