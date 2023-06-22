@@ -55,8 +55,12 @@ function StartService([string] $ApplicationName){
 # BuildLib
 # Deploy -SourceFolder $SourceFolder -DestinationFolder $DestinationFolder
 # StartPool -ApplicationPoolName $ApplicationPoolName
-Write-Host "Running on ${Environment:MachineName} ..."
-Write-Host "CI_BUILDS_DIR -  ${CI_BUILDS_DIR}"
-Write-Host "CI_JOB_NAME - ${CI_JOB_NAME}"
-Write-Host "CI_PROJECT_DIR - ${CI_PROJECT_DIR}"
-Write-Host "CI_PROJECT_PATH - ${CI_PROJECT_PATH}"
+write-host "This script is a file in the repository that is called by .gitlab-ci.yml"
+write-host "Running in project $env:CI_PROJECT_NAME with results at $env:CI_JOB_URL ($env:CI_JOB_URL)."
+write-host "PowerShell and .NET Version Details:"
+$PSVersiontable
+write-host "GitLab CI Variables are always propagated to PowerShell as environment variables and ONLY FOR the default PowerShell shell they are also propagated to regular PowerShell variables."
+write-host "Listing all PowerShell variables:"
+dir variable: | format-table Name,Value
+write-host "Listing all Environment variables:"
+dir env: | format-table Name,Value
