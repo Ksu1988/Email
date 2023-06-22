@@ -30,9 +30,9 @@ function Deploy([string] $SourceFolder, [string] $DestinationFolder){
 function BuildLib(){
 	Write-Host "Build SCCBA lib"
 	New-Item -ItemType Directory -Force -Path '..\..\..\Common'
-    git clone http://gitlab.stada.ru/cba/common/sccba.git ${CI_PROJECT_DIR}/sccba
+    git clone http://gitlab.stada.ru/cba/common/sccba.git $env:CI_PROJECT_DIR/sccba
     Remove-Item '..\..\..\common\*' -Force -Recurse -ErrorAction Continue
-    Move-Item -Path ${CI_PROJECT_DIR}/sccba -Destination '../../../Common' -ErrorAction Continue -Verbose -Force
+    Move-Item -Path $env:CI_PROJECT_DIR/sccba -Destination '../../../Common' -ErrorAction Continue -Verbose -Force
     
 }
 
@@ -51,16 +51,12 @@ function StartService([string] $ApplicationName){
 [string] $DestinationFolder = 'C:\_WORKERS\WorkerHrEmail'
 [string] $ApplicationName = 'WorkerHrEmail'
 
-# StopPool -ApplicationPoolName $ApplicationPoolName
-# BuildLib
-# Deploy -SourceFolder $SourceFolder -DestinationFolder $DestinationFolder
-# StartPool -ApplicationPoolName $ApplicationPoolName
 write-host "This script is a file in the repository that is called by .gitlab-ci.yml"
 write-host "Running in project $env:CI_PROJECT_NAME with results at $env:CI_JOB_URL ($env:CI_JOB_URL)."
 write-host "PowerShell and .NET Version Details:"
 $PSVersiontable
-write-host "GitLab CI Variables are always propagated to PowerShell as environment variables and ONLY FOR the default PowerShell shell they are also propagated to regular PowerShell variables."
-write-host "Listing all PowerShell variables:"
-dir variable: | format-table Name,Value
-write-host "Listing all Environment variables:"
-dir env: | format-table Name,Value
+
+StopPool -ApplicationPoolName $ApplicationPoolName
+BuildLib
+Deploy -SourceFolder $SourceFolder -DestinationFolder $DestinationFolder
+StartPool -ApplicationPoolName $ApplicationPoolName
