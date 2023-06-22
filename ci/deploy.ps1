@@ -3,6 +3,17 @@ Import-Module $ScriptDir\functions.psm1
 
 function EchoEnv() {
     echo "Running on $([Environment]::MachineName)..."
+    echo ${CI_BUILDS_DIR}
+    echo ${CI_JOB_NAME}
+    echo ${CI_PROJECT_DIR}
+    echo ${CI_PROJECT_PATH}
+    echo ${CI_PROJECT_NAME}
+    echo ${CI_RUNNER_ID}
+    echo ${CI_RUNNER_TAGS}
+    echo ${CI_RUNNER_DESCRIPTION}
+    echo ${CI_CONCURRENT_ID}
+    Write-Host "========="
+    Write-Host "$CI_PROJECT_DIR"
 }
 
 function StopService([string] $ApplicationName){
