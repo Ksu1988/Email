@@ -53,10 +53,8 @@ function StartService([string] $ApplicationName){
 
 write-host "This script is a file in the repository that is called by .gitlab-ci.yml"
 write-host "Running in project $env:CI_PROJECT_NAME with results at $env:CI_JOB_URL ($env:CI_JOB_URL)."
-write-host "PowerShell and .NET Version Details:"
-$PSVersiontable
 
-StopPool -ApplicationPoolName $ApplicationPoolName
+StopService -ApplicationName $ApplicationName
 BuildLib
 Deploy -SourceFolder $SourceFolder -DestinationFolder $DestinationFolder
-StartPool -ApplicationPoolName $ApplicationPoolName
+StartService -ApplicationName $ApplicationName
