@@ -28,8 +28,8 @@ build:
   variables:
       CONFIGURATION_NAME: Debug
   except:
-    - release
-    - master
+    - PROD
+    - TEST
    
 build:
   extends: .build
@@ -38,7 +38,7 @@ build:
   variables:
       CONFIGURATION_NAME: Staging
   only:
-    - master
+    - TEST
 
 # test:
 #  extends: .test
@@ -68,10 +68,10 @@ deploy-prod:
     - PROD
 
 restart service:
-  extends: .restart service
+  extends: restart service
   tags:
-    - nn23-t
+    - nn23-p
   variables:
     APP_NAME: APP_NAME
-  only:
-    - master
+  except:
+    - PROD
