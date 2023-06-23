@@ -72,10 +72,12 @@ namespace WorkerHrEmail.Model
 		            inner join Staff_Personnel on (Staff_Personnel.Id_Pers = main.Id_Pers)
 		            INNER JOIN Staff_Mail ON (Staff_Mail.Id_Pers = main.Id_Pers)						
 		            INNER JOIN Staff_Profession ON (Staff_Profession.Id_ProfUniq = main.Id_ProfUniq)
+                    INNER JOIN Staff_Division on Staff_Division.Id_DivUniq = Staff_Profession.Id_DivUniq
                where 
                     main.DateOUT > CURDATE()
 		            AND Staff_Profession.Id_Cat <> 0
 		            AND main.Id_Status = 1
+		            AND Staff_Division.Id_LegalEntity = 1
                group by main.Id_Pers, Staff_Mail.Mail, Staff_Personnel.Nam
             ) as main
             WHERE
