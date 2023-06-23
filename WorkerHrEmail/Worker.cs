@@ -200,11 +200,13 @@ namespace WorkerHrEmail
                             message.To.Add(user.Mail);
                         }
                     }
-                    //отсылаем письмо               
-                    message.CC.Add(new MailAddress("ekaterina.sarandaeva@stada.ru"));
-                    message.CC.Add(new MailAddress("julia.zhuga@stada.ru"));
-                    _emailService.SendMessage(message);
-
+                    //отсылаем письмо
+                    if (users.Any())
+                    {
+                        message.CC.Add(new MailAddress("ekaterina.sarandaeva@stada.ru"));
+                        message.CC.Add(new MailAddress("julia.zhuga@stada.ru"));
+                        _emailService.SendMessage(message);
+                    }
                     foreach (var user in users)
                     {
                         hr.UserReceivedOneWeekEmail(user);
