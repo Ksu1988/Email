@@ -12,7 +12,7 @@ stages:
 .deploy:
   stage: deploy
   script:
-    - dotnet publish -c $CONFIGURATION_NAME
+    - dotnet publish -c $CONFIGURATION_NAME -o publish
     - powershell ci/deploy.ps1 publish
 
 .restart service:
