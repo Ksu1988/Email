@@ -3,8 +3,10 @@ Import-Module $ScriptDir\functions.psm1
 
 [string] $ServiceName = [Environment]::GetEnvironmentVariable($args[0])
 
-$stopCommand = "Stop-Service -Name $ServiceName;"
-TryManyWithTimeout -Command $stopCommand -Attempts 3
+write-host "Service name $ServiceName"
 
-$startCommand = "Start-Service -Name $ServiceName;"
-TryManyWithTimeout -Command $startCommand -Attempts 3
+$stopCommand = "Stop-Service -Name $ServiceName -Force -PassThru;"
+TryManyWithTimeout -Command $stopCommand -Attempts 2
+
+$startCommand = "Start-Service -Name $ServiceName -PassThru;"
+TryManyWithTimeout -Command $startCommand -Attempts 2
