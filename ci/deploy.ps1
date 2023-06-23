@@ -5,7 +5,7 @@ function StopService([string] $ApplicationName){
 	CheckIsNullOrEmptyString -Value $ApplicationName -ArgName 'ApplicationName'
 
 	Write-Host "Stop $ApplicationName service"
-	$stopCommand = "Stop-Service -Name $ApplicationName -ErrorAction Ignore"
+	$stopCommand = "Stop-Service -Name $ApplicationName -PassThru"
 	$tryStatus = TryManyWithTimeout -Command $stopCommand -Attempts 3
 	if( -not $tryStatus ){
 		throw 'Stop service failed';
@@ -40,7 +40,7 @@ function StartService([string] $ApplicationName){
 	CheckIsNullOrEmptyString -Value $ApplicationName -ArgName 'ApplicationName'
 
 	Write-Host "Start $ApplicationName pool"
-	$startCommand = "Start-Service -Name $ApplicationName"
+	$startCommand = "Start-Service -Name $ApplicationName -PassThru"
 	$tryStatus = TryManyWithTimeout -Command $startCommand -Attempts 3
 	if( -not $tryStatus ){
 		throw 'Start service failed';
