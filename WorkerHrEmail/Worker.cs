@@ -176,11 +176,16 @@ namespace WorkerHrEmail
 
         private void Work_ComplienceEmployees()
         {
+            if (DateTime.Now.DayOfWeek != DayOfWeek.Friday)
+            {
+                return;
+            }
             try
             {
                 _logger.LogInformation("compliance and ethics email start");
                 var cs = _config.GetSection("ConnectionStrings:CbaConnectionString").Value;
                 string emailFrom = _config.GetSection("Email:From").Value;
+                
 
                 using (var hr = new MSSqlConnection(cs))
                 using (var conn = new MySqlConnection(MySqlServer.Main))
