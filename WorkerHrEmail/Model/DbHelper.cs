@@ -1,4 +1,5 @@
-﻿using SCCBA.DB;
+﻿using Microsoft.VisualBasic;
+using SCCBA.DB;
 using SCCBA.Extensions;
 using System;
 using System.Collections.Generic;
@@ -81,9 +82,12 @@ namespace WorkerHrEmail.Model
                group by main.Id_Pers, Staff_Mail.Mail, Staff_Personnel.Nam
             ) as main
             WHERE
-              firstdate >= DATE_ADD(CURDATE(), INTERVAL - 6 DAY)
-              AND firstdate <= CURDATE()        
-              order by 2 desc";      
+                  firstdate >= '2023-06-22'
+                    AND firstdate <= CURDATE()                      
+              order by 2 desc";
+        //firstdate >= DATE_ADD(CURDATE(), INTERVAL - 6 DAY)
+        //      AND firstdate <= CURDATE()
+
         public static string sqlForTest = @"
             select * from
             (
