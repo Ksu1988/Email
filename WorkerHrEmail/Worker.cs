@@ -197,16 +197,18 @@ namespace WorkerHrEmail
                                                     filename: $"{currentDirectory}\\data\\oneWeek.html",
                                                     from: "compliance@stada.ru"
                                                 );
+                    var countToSend = 0;
                     foreach (var user in users)
                     {
                         if (!hr.WasOneWeekEmail(user))
                         {
                             _logger.LogInformation("try sending email for {EmployeeId} ({Mail})", user.EmployeeId, user.Mail);
                             message.To.Add(user.Mail);
+                            countToSend++;
                         }
                     }
                     //отсылаем письмо
-                    if (users.Any())
+                    if (users.Any() && countToSend > 0)
                     {
                         message.CC.Add(new MailAddress("ekaterina.sarandaeva@stada.ru"));
                         message.CC.Add(new MailAddress("julia.zhuga@stada.ru"));
