@@ -248,7 +248,7 @@ namespace WorkerHrEmail
                     if (history.Max(x => x.Diff1) >= 30 || history.Max(x => x.Diff2) >= 30) //Накопилось больше-равно 30 дней. Оформляем отчет
                     {
                         _logger.LogInformation("send report");
-                        using var message = new EmailReport(_config.GetSection("Email:ForReport").Value, history.ToArray());
+                        using var message = new EmailReport(_config.GetSection("Email:ForReport").Value, emailFrom, history.ToArray());
                         //отсылаем письмо
                         _emailService.SendMessage(message);
                         //отмечаем у всех пользователей, что мы отчитались по отправке писем
