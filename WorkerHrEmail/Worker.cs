@@ -176,7 +176,7 @@ namespace WorkerHrEmail
 
         private void Work_ComplienceEmployees()
         {
-            if (DateTime.Now.DayOfWeek != DayOfWeek.Friday)
+            if (DateTime.Now.DayOfWeek != DayOfWeek.Friday || DateTime.Now.Hour < 9 )
             {
                 return;
             }
@@ -197,16 +197,18 @@ namespace WorkerHrEmail
                                                     filename: $"{currentDirectory}\\data\\oneWeek.html",
                                                     from: "compliance@stada.ru"
                                                 );
+                    var countToSend = 0;
                     foreach (var user in users)
                     {
                         if (!hr.WasOneWeekEmail(user))
                         {
                             _logger.LogInformation("try sending email for {EmployeeId} ({Mail})", user.EmployeeId, user.Mail);
                             message.To.Add(user.Mail);
+                            countToSend++;
                         }
                     }
                     //отсылаем письмо
-                    if (users.Any())
+                    if (users.Any() && countToSend > 0)
                     {
                         message.CC.Add(new MailAddress("ekaterina.sarandaeva@stada.ru"));
                         message.CC.Add(new MailAddress("julia.zhuga@stada.ru"));
@@ -246,7 +248,7 @@ namespace WorkerHrEmail
                     if (history.Max(x => x.Diff1) >= 30 || history.Max(x => x.Diff2) >= 30) //Накопилось больше-равно 30 дней. Оформляем отчет
                     {
                         _logger.LogInformation("send report");
-                        using var message = new EmailReport(_config.GetSection("Email:ForReport").Value, history.ToArray());
+                        using var message = new EmailReport(_config.GetSection("Email:ForReport").Value, emailFrom, history.ToArray());
                         //отсылаем письмо
                         _emailService.SendMessage(message);
                         //отмечаем у всех пользователей, что мы отчитались по отправке писем
