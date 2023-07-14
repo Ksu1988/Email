@@ -176,7 +176,7 @@ namespace WorkerHrEmail
 
         private void Work_ComplienceEmployees()
         {
-            if (DateTime.Now.DayOfWeek != DayOfWeek.Friday)
+            if (DateTime.Now.DayOfWeek != DayOfWeek.Friday || DateTime.Now.Hour < 9 )
             {
                 return;
             }
