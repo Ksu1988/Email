@@ -65,7 +65,7 @@ deploy-prod:
     CONFIGURATION_NAME: Release
     ENVIRONMENT_NAME: Production
   only:
-    - master
+    - PROD
 
 restart service:
   extends: .restart service
