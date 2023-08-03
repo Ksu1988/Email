@@ -48,8 +48,8 @@ function StartService([string] $ApplicationName){
 }
 
 [string] $SourceFolder = $args[0]
-[string] $DestinationFolder = 'C:\_WORKERS\WorkerHrEmail'
-[string] $ApplicationName = 'WorkerHrEmail'
+[string] $DestinationFolder = $arg[1]
+[string] $ApplicationName = $arg[2]
 
 write-host "This script is a file in the repository that is called by .gitlab-ci.yml"
 write-host "Running in project $env:CI_PROJECT_NAME with results at $env:CI_JOB_URL ($env:CI_JOB_URL)."
