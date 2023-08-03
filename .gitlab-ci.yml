@@ -20,6 +20,12 @@ stages:
   script:
     - powershell ci/restart-service.ps1 $APP_NAME
   when: manual
+  
+.stop service:
+  stage: manual
+  script:
+    - powershell ci/stop-service.ps1 $APP_NAME
+  when: manual
 
 # build:
 #   extends: .build
@@ -66,6 +72,20 @@ deploy-prod:
     ENVIRONMENT_NAME: Production
   only:
     - PROD
+    
+stop prod service:
+  extends: .stop service
+  tags:
+    - nn23-p
+  except:
+    - PROD
+
+stop test service:
+  extends: .stop service
+  tags:
+    - nn23-t
+  except:
+    - TEST
 
 restart service:
   extends: .restart service
