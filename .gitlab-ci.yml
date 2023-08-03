@@ -13,7 +13,7 @@ stages:
   stage: deploy
   script:
     - dotnet publish -c $CONFIGURATION_NAME -o publish
-    - powershell ci/deploy.ps1 publish
+    - powershell ci/deploy.ps1 publish $APP_DEST_FOLDER $APP_NAME
 
 .restart service:
   stage: manual
