@@ -71,7 +71,5 @@ restart service:
   extends: .restart service
   tags:
     - nn23-p
-  variables:
-    APP_NAME: "WorkerHrEmail"
   except:
     - PROD
