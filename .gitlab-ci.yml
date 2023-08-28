@@ -12,13 +12,19 @@ stages:
 .deploy:
   stage: deploy
   script:
-    - dotnet publish -c $CONFIGURATION_NAME
-    - powershell ci/deploy.ps1 publish
+    - dotnet publish -c $CONFIGURATION_NAME -o publish
+    - powershell ci/deploy.ps1 publish $APP_DEST_FOLDER $APP_NAME
 
 .restart service:
   stage: manual
   script:
     - powershell ci/restart-service.ps1 $APP_NAME
+  when: manual
+  
+.stop service:
+  stage: manual
+  script:
+    - powershell ci/stop-service.ps1 $APP_NAME
   when: manual
 
 # build:
@@ -65,13 +71,25 @@ deploy-prod:
     CONFIGURATION_NAME: Release
     ENVIRONMENT_NAME: Production
   only:
-    - master
+    - PROD
+    
+stop prod service:
+  extends: .stop service
+  tags:
+    - nn23-p
+  except:
+    - PROD
+
+stop test service:
+  extends: .stop service
+  tags:
+    - nn23-t
+  except:
+    - TEST
 
 restart service:
   extends: .restart service
   tags:
     - nn23-p
-  variables:
-    APP_NAME: APP_NAME
   except:
     - PROD
