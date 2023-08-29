@@ -29,10 +29,10 @@ function Deploy([string] $SourceFolder, [string] $DestinationFolder){
 
 function BuildLib(){
 	Write-Host "Build SCCBA lib"
-	New-Item -ItemType Directory -Force -Path '..\..\..\Common'
-    git clone http://gitlab.stada.ru/cba/common/sccba.git $env:CI_PROJECT_DIR/sccba
-    Remove-Item '..\..\..\common\*' -Force -Recurse -ErrorAction Continue
-    Move-Item -Path $env:CI_PROJECT_DIR/sccba -Destination '../../../Common' -ErrorAction Continue -Verbose -Force
+	# New-Item -ItemType Directory -Force -Path '..\..\..\Common'
+    git clone http://gitlab.stada.ru/cba/common/sccba.git $env:CI_PROJECT_DIR/../../sccba
+    # Remove-Item '..\..\..\common\*' -Force -Recurse -ErrorAction Continue
+    # Move-Item -Path $env:CI_PROJECT_DIR/sccba -Destination '../../../Common' -ErrorAction Continue -Verbose -Force
     
 }
 
