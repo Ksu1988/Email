@@ -12,7 +12,7 @@ stages:
 .deploy:
   stage: deploy
   script:
-    - git clone http://gitlab.stada.ru/cba/common/sccba.git $env:CI_PROJECT_DIR/../../sccba
+    - git clone http://gitlab.stada.ru/cba/common/sccba.git $env:CI_PROJECT_DIR/../sccba
     - dotnet publish -c $CONFIGURATION_NAME -o publish
     - powershell ci/deploy.ps1 publish $APP_DEST_FOLDER $APP_NAME
 
