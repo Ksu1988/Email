@@ -91,10 +91,7 @@ namespace WorkerHrEmail
                 using (var hr = new MSSqlConnection(cs))
                 using (var conn = new MySqlConnection(MySqlServer.Main))
                 {
-                    var users = conn.GetUsers(ReasonsForSelect.Wellcome);//Получаем пользователей, которые подходят под получение wellcome письма
-
-                    //users = conn.GetUsers(ReasonsForSelect.test);
-
+                    var users = conn.GetUsers(ReasonsForSelect.Wellcome);//Получаем пользователей, которые подходят под получение wellcome письма               
                     foreach (var user in users)
                     {
                         if (!hr.WasWellcomeEmail(user)) //этому работнику еще не отсылали
@@ -104,7 +101,7 @@ namespace WorkerHrEmail
                             using (var message = new EmailMessage(
                                 to: user.Mail,
                                 subject: "Добро пожаловать в STADA!",
-                                filename: $"{currentDirectory}\\data\\wellcome.teml",
+                                filename: $"{currentDirectory}\\data\\welcome.htm",
                                 from: emailFrom,
                                 Tuple.Create("Name", user.FirstNameRU) //добавляем имя
                             ))
@@ -153,8 +150,9 @@ namespace WorkerHrEmail
                             using (var message = new EmailMessage(
                                 to: user.Mail,
                                 subject: "Поздравляем с годом работы в STADA!",
-                                filename: $"{currentDirectory}\\data\\oneyear.teml",
-                                from: emailFrom
+                                filename: $"{currentDirectory}\\data\\oneYear.htm",
+                                from: emailFrom,
+                                Tuple.Create("Name", user.FirstNameRU)
                             ))
                             {
                                 //отсылаем письмо
