@@ -55,6 +55,6 @@ write-host "This script is a file in the repository that is called by .gitlab-ci
 write-host "Running in project $env:CI_PROJECT_NAME with results at $env:CI_JOB_URL ($env:CI_JOB_URL)."
 
 StopService -ApplicationName $ApplicationName
-BuildLib
+# BuildLib
 Deploy -SourceFolder $SourceFolder -DestinationFolder $DestinationFolder
 StartService -ApplicationName $ApplicationName
