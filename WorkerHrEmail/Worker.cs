@@ -101,7 +101,7 @@ namespace WorkerHrEmail
                             using (var message = new EmailMessage(
                                 to: user.Mail,
                                 subject: "Добро пожаловать в STADA!",
-                                filename: $"{currentDirectory}\\data\\welcome.htm",
+                                filename: $"{currentDirectory}\\data\\welcome.html",
                                 from: emailFrom,
                                 Tuple.Create("Name", user.FirstNameRU) //добавляем имя
                             ))
