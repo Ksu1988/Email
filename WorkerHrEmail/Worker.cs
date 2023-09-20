@@ -85,18 +85,23 @@ namespace WorkerHrEmail
         {
             try
             {
-                _logger.LogInformation("{Method} wellcome emails start", nameof(Work_NewEmployees));
                 string cs = _config.GetSection("ConnectionStrings:CbaConnectionString").Value; // я вот это раскоментировал так как ниже была ошибка из-за cs
                 string emailFrom = _config.GetSection("Email:From").Value;
                 using (var hr = new MSSqlConnection(cs))
                 using (var conn = new MySqlConnection(MySqlServer.Main))
                 {
                     var users = conn.GetUsers(ReasonsForSelect.Wellcome);//Получаем пользователей, которые подходят под получение wellcome письма               
+                    if (!users.Any())
+                    {
+                        _logger.LogInformation("{Method} wellcome emails users count {Count}", nameof(Work_NewEmployees), users.Count());
+                        return;
+                    }
+                    _logger.LogInformation("{Method} wellcome emails start, users count {Count}", nameof(Work_NewEmployees), users.Count());
                     foreach (var user in users)
                     {
                         if (!hr.WasWellcomeEmail(user)) //этому работнику еще не отсылали
                         {
-                            _logger.LogInformation("try sending email for {EmployeeId} ({Mail})", user.EmployeeId, user.Mail);
+                            _logger.LogInformation("{Method} try sending email for {EmployeeId} ({Mail})", nameof(Work_NewEmployees), user.EmployeeId, user.Mail);
                             //формируем письмо
                             using (var message = new EmailMessage(
                                 to: user.Mail,
@@ -110,11 +115,11 @@ namespace WorkerHrEmail
                                 _emailService.SendMessage(message);
                                 hr.UserReceivedWellcomeEmail(user); //записываем в базу данных, что пользователю письмо отправленно
                             }
-                            _logger.LogInformation("email for {EmployeeId} ({Mail}) was sent", user.EmployeeId, user.Mail);
+                            _logger.LogInformation("{Method} email for {EmployeeId} ({Mail}) was sent", nameof(Work_NewEmployees), user.EmployeeId, user.Mail);
                         }
                     }
                 }
-                _logger.LogInformation("wellcome emails comleted");
+                _logger.LogInformation("{Method} wellcome emails comleted", nameof(Work_NewEmployees));
             }
             catch (Exception ex)
             {
